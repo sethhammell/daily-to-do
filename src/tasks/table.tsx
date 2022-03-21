@@ -14,7 +14,7 @@ const columns: GridColDef[] = [
 ];
 
 const rows = [
-  { id: 1, task: "Learning React", description: "Work on react side project", estimatedTime: 120, timeSpent: 0 },
+  { id: 1, task: "Pain", description: "pain", estimatedTime: 99999, timeSpent: 0 },
   { id: 2, task: "Snow", description: "Jon", estimatedTime: 35, timeSpent: 0 },
   { id: 3, task: "Snow", description: "Jon", estimatedTime: 35, timeSpent: 0 },
   { id: 4, task: "Snow", description: "Jon", estimatedTime: 35, timeSpent: 0 },
