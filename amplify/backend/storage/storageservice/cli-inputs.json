@@ -1,0 +1,14 @@
+{
+  "resourceName": "storageservice",
+  "policyUUID": "98b6ae2b",
+  "bucketName": "dailytodobcb308c95b26400e869a14a6b361c0a0",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}
