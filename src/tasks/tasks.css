@@ -1,0 +1,10 @@
+.tasks-table {
+  height: 50%;
+  width: 50%;
+  justify-content: center;
+}
+
+.MuiDrawer-paper {
+  width: "300px";
+  /* boxSizing: 'border-box'; */
+}

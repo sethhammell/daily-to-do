@@ -1,0 +1,7 @@
+.nav {
+  width: 250px
+}
+
+.MuiListItem-root {
+  width: auto !important;
+}
