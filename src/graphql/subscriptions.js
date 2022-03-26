@@ -5,8 +5,18 @@ export const onCreateTodo = /* GraphQL */ `
   subscription OnCreateTodo {
     onCreateTodo {
       id
-      name
-      description
+      clientId
+      taskName
+      estimatedTime
+      daysOfWeek {
+        sunday
+        monday
+        tuesday
+        wednesday
+        thursday
+        friday
+        saturday
+      }
       createdAt
       updatedAt
     }
@@ -16,8 +26,18 @@ export const onUpdateTodo = /* GraphQL */ `
   subscription OnUpdateTodo {
     onUpdateTodo {
       id
-      name
-      description
+      clientId
+      taskName
+      estimatedTime
+      daysOfWeek {
+        sunday
+        monday
+        tuesday
+        wednesday
+        thursday
+        friday
+        saturday
+      }
       createdAt
       updatedAt
     }
@@ -27,8 +47,18 @@ export const onDeleteTodo = /* GraphQL */ `
   subscription OnDeleteTodo {
     onDeleteTodo {
       id
-      name
-      description
+      clientId
+      taskName
+      estimatedTime
+      daysOfWeek {
+        sunday
+        monday
+        tuesday
+        wednesday
+        thursday
+        friday
+        saturday
+      }
       createdAt
       updatedAt
     }

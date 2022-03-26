@@ -4,6 +4,18 @@ input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONL
 
 type Todo @model {
   id: ID!
-  name: String!
-  description: String
+  clientId: String!
+  taskName: String!
+  estimatedTime: Int!
+  daysOfWeek: DaysOfWeek!
+}
+
+type DaysOfWeek {
+  sunday: Boolean,
+  monday: Boolean,
+  tuesday: Boolean,
+  wednesday: Boolean,
+  thursday: Boolean,
+  friday: Boolean,
+  saturday: Boolean,
 }

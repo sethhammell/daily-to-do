@@ -5,9 +5,9 @@ import "./home.css";
 function Home() {
   return (
     <div className="home">
-      <Sidenav></Sidenav>
+      <Sidenav />
       <div className="tasks">
-        <TasksTable></TasksTable>
+        <TasksTable />
       </div>
     </div>
   );
