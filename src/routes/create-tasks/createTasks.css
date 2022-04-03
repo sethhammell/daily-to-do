@@ -1,0 +1,9 @@
+.edit-tasks-table {
+  height: 75%;
+  width: 75%;
+}
+
+.edit-tasks-table-container {
+  display: flex;
+  justify-content: center;
+}

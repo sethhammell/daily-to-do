@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidenav from "../../sidenav/sidenav";
 import { Todo } from "../../interfaces/todo";
 import './createTasks.css';
+import EditTasksTable from "./editTasksTable";
 import { API } from 'aws-amplify';
 import { listTodos } from '../../graphql/queries';
 import { createTodo as createTodoMutation, deleteTodo as deleteTodoMutation } from '../../graphql/mutations';
@@ -9,7 +10,7 @@ import { Auth } from 'aws-amplify';
 
 const initialFormState = { name: '', description: '' }
 
-async function getClientId(): Promise<String> {
+async function getClientId(): Promise<string> {
   try {
     const data = await Auth.currentAuthenticatedUser();
     return data ? data.pool.clientId : '';
@@ -23,7 +24,7 @@ async function getClientId(): Promise<String> {
 function CreateTasks() {
   const [todos, setTodos] = useState([]) as any;
   const [formData, setFormData] = useState(initialFormState);
-  const [clientId, setClientId] = useState<String | null>(null);
+  const [clientId, setClientId] = useState<string | null>(null);
 
   getClientId().then(clientId => {
     if (clientId !== '') {
@@ -73,9 +74,12 @@ function CreateTasks() {
   }
 
   return (
-    <div className="App">
+    <div>
       <Sidenav />
-      <h1>My Todos App</h1>
+      <div className='edit-tasks-table-container'>
+        <EditTasksTable></EditTasksTable>
+      </div>
+      {/* <h1>My Todos App</h1>
       <input
         onChange={e => setFormData({ ...formData, 'name': e.target.value })}
         placeholder="Todo name"
@@ -100,7 +104,7 @@ function CreateTasks() {
             </div>
           ))
         }
-      </div>
+      </div> */}
     </div>
   );
 }

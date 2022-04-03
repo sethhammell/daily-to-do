@@ -1,9 +1,9 @@
 export interface DaysOfWeek {
-  sunday: Boolean,
-  monday: Boolean,
-  tuesday: Boolean,
-  wednesday: Boolean,
-  thursday: Boolean,
-  friday: Boolean,
-  saturday: Boolean,
+  sunday: boolean,
+  monday: boolean,
+  tuesday: boolean,
+  wednesday: boolean,
+  thursday: boolean,
+  friday: boolean,
+  saturday: boolean,
 }

@@ -1,4 +1,4 @@
-import TasksTable from "../../tasks/table";
+import TasksTable from "../../tasks/tasksTable";
 import Sidenav from "../../sidenav/sidenav";
 import "./home.css";
 
