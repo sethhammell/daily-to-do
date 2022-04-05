@@ -14,13 +14,15 @@ import './manageTasks.css';
 import { DaysOfWeek } from '../../interfaces/daysOfWeek';
 import { IconButton } from '@mui/material';
 
-interface ManageTasksTableProps { }
+interface ManageTasksTableProps {
+  openCreateTaskDialog(): void;
+}
 interface ManageTasksTableState {
   todoHeaders: string[];
   todos: TodoData[];
 }
 class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTasksTableState> {
-  constructor(props: any) {
+  constructor(props: ManageTasksTableProps) {
     super(props);
     this.state = {
       todoHeaders: ["Task Name", "Estimated Time", "Days of the Week", "Add"],
@@ -39,11 +41,7 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
           }
         }
       ]
-    }
-  }
-
-  addTodo() {
-
+    };
   }
 
   editTodo(i: number) {
@@ -54,6 +52,10 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
     console.log(i);
   }
 
+  lastHeading(): string {
+    return this.state.todoHeaders[this.state.todoHeaders.length - 1];
+  }
+
   render() {
     return (
       <div className='manage-tasks-table'>
@@ -62,12 +64,12 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
             <TableHead>
               <TableRow>
                 {this.state.todoHeaders.map((header: string) => {
-                  if (header === "Add") {
+                  if (header === this.lastHeading()) {
                     return (
                       <TableCell>
                         {header}
                         <IconButton
-                          onClick={() => this.addTodo()}
+                          onClick={() => this.props.openCreateTaskDialog()}
                         >
                           <AddIcon />
                         </IconButton>

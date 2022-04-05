@@ -1,51 +1,61 @@
 import React, { useState, useEffect } from 'react';
-import Sidenav from "../../sidenav/sidenav";
-import { Todo } from "../../interfaces/todo";
 import './manageTasks.css';
+import Sidenav from "../../sidenav/sidenav";
 import ManageTasksTable from "./manageTasksTable";
+import CreateTaskDialog from './createTaskDialog';
+import { Todo } from "../../interfaces/todo";
+
 import { API } from 'aws-amplify';
+import { Auth } from 'aws-amplify';
 import { listTodos } from '../../graphql/queries';
 import { createTodo as createTodoMutation, deleteTodo as deleteTodoMutation } from '../../graphql/mutations';
-import { Auth } from 'aws-amplify';
 
-const initialFormState = { name: '', description: '' }
+// const initialFormState = { name: '', description: '' }
 
-async function getClientId(): Promise<string> {
-  try {
-    const data = await Auth.currentAuthenticatedUser();
-    return data ? data.pool.clientId : '';
-  }
-  catch (err) {
-    console.log(err);
-    return '';
-  };
+interface ManageTasksProps { }
+interface ManageTasksState {
+  todos: any;
+  clientId: string | null;
+  showCreateTaskDialog: boolean;
 }
+class ManageTasks extends React.Component<ManageTasksProps, ManageTasksState> {
+  constructor(props: ManageTasksProps) {
+    super(props);
+    this.state = {
+      todos: [],
+      clientId: null,
+      showCreateTaskDialog: false
+    };
 
-function ManageTasks() {
-  const [todos, setTodos] = useState([]) as any;
-  const [formData, setFormData] = useState(initialFormState);
-  const [clientId, setClientId] = useState<string | null>(null);
+    // const[todos, setTodos] = useState([]) as any;
+    // const [formData, setFormData] = useState(initialFormState);
+    // const [clientId, setClientId] = useState<string | null>(null);
 
-  getClientId().then(clientId => {
-    if (clientId !== '') {
-      setClientId(clientId);
-    }
-  })
 
-  useEffect(() => {
-    fetchTodos();
-  }, []);
+    // only for functional components
+    // useEffect(() => {
+    //   this.fetchTodos();
+    // }, []);
+  }
 
-  async function fetchTodos() {
+  componentDidMount() {
+    getClientId().then(clientId => {
+      if (clientId !== '') {
+        this.setState({ clientId: clientId });
+      }
+    })
+  }
+
+  async fetchTodos() {
     const apiData = await API.graphql({ query: listTodos }) as any;
     console.log(apiData);
     // setTodos(apiData.data.listTodos.items);
   }
 
-  async function createTodo() {
+  async createTodo() {
     // if (!clientId) return;
     const todo: Todo = {
-      clientId: clientId!,
+      clientId: this.state.clientId!,
       taskName: "Test",
       estimatedTime: 121,
       daysOfWeek: {
@@ -62,24 +72,39 @@ function ManageTasks() {
     const newData: any = await API.graphql({ query: createTodoMutation, variables: { input: todo } });
     const newTodo = newData.data.createTodo;
     console.log(newTodo);
-    setTodos([...todos, newTodo]);
+    this.setState({ todos: [...this.state.todos, newTodo] });
     // setFormData(initialFormState);
   }
 
-  async function deleteTodo(todo: any) {
+  async deleteTodo(todo: any) {
     const id = todo.id;
-    const newTodosArray = todos.filter((todo: any) => todo.id !== id);
-    setTodos(newTodosArray);
+    const newTodosArray = this.state.todos.filter((todo: any) => todo.id !== id);
+    this.setState({ todos: newTodosArray });
     await API.graphql({ query: deleteTodoMutation, variables: { input: { id } } });
   }
 
-  return (
-    <div>
-      <Sidenav />
-      <div className='manage-tasks-table-container'>
-        <ManageTasksTable></ManageTasksTable>
-      </div>
-      {/* <h1>My Todos App</h1>
+  openCreateTaskDialog() {
+    this.setState({ showCreateTaskDialog: true });
+  }
+
+  closeCreateTaskDialog() {
+    this.setState({ showCreateTaskDialog: false });
+  }
+
+  render() {
+    return (
+      <div>
+        <Sidenav />
+        <div className='manage-tasks-table-container'>
+          <ManageTasksTable
+            openCreateTaskDialog={this.openCreateTaskDialog.bind(this)}
+          ></ManageTasksTable>
+          <CreateTaskDialog
+            open={this.state.showCreateTaskDialog}
+            closeCreateTaskDialog={this.closeCreateTaskDialog.bind(this)}
+          ></CreateTaskDialog>
+        </div>
+        {/* <h1>My Todos App</h1>
       <input
         onChange={e => setFormData({ ...formData, 'name': e.target.value })}
         placeholder="Todo name"
@@ -105,8 +130,20 @@ function ManageTasks() {
           ))
         }
       </div> */}
-    </div>
-  );
+      </div>
+    );
+  }
+}
+
+async function getClientId(): Promise<string> {
+  try {
+    const data = await Auth.currentAuthenticatedUser();
+    return data ? data.pool.clientId : '';
+  }
+  catch (err) {
+    console.log(err);
+    return '';
+  };
 }
 
 export default ManageTasks;
