@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Sidenav from "../../sidenav/sidenav";
 import { Todo } from "../../interfaces/todo";
-import './createTasks.css';
-import EditTasksTable from "./editTasksTable";
+import './manageTasks.css';
+import ManageTasksTable from "./manageTasksTable";
 import { API } from 'aws-amplify';
 import { listTodos } from '../../graphql/queries';
 import { createTodo as createTodoMutation, deleteTodo as deleteTodoMutation } from '../../graphql/mutations';
@@ -21,7 +21,7 @@ async function getClientId(): Promise<string> {
   };
 }
 
-function CreateTasks() {
+function ManageTasks() {
   const [todos, setTodos] = useState([]) as any;
   const [formData, setFormData] = useState(initialFormState);
   const [clientId, setClientId] = useState<string | null>(null);
@@ -76,8 +76,8 @@ function CreateTasks() {
   return (
     <div>
       <Sidenav />
-      <div className='edit-tasks-table-container'>
-        <EditTasksTable></EditTasksTable>
+      <div className='manage-tasks-table-container'>
+        <ManageTasksTable></ManageTasksTable>
       </div>
       {/* <h1>My Todos App</h1>
       <input
@@ -109,7 +109,7 @@ function CreateTasks() {
   );
 }
 
-export default CreateTasks;
+export default ManageTasks;
 
 // import React, { useState, useEffect } from 'react';
 // import './createTasks.css';

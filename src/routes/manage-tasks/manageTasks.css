@@ -1,9 +1,9 @@
-.edit-tasks-table {
+.manage-tasks-table {
   height: 75%;
   width: 75%;
 }
 
-.edit-tasks-table-container {
+.manage-tasks-table-container {
   display: flex;
   justify-content: center;
 }

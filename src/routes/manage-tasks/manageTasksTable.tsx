@@ -7,22 +7,23 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import './createTasks.css';
+import './manageTasks.css';
 import { DaysOfWeek } from '../../interfaces/daysOfWeek';
 import { IconButton } from '@mui/material';
 
-interface EditTasksTableProps { }
-interface EditTasksTableState {
+interface ManageTasksTableProps { }
+interface ManageTasksTableState {
   todoHeaders: string[];
   todos: TodoData[];
 }
-class EditTasksTable extends React.Component<EditTasksTableProps, EditTasksTableState> {
+class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTasksTableState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      todoHeaders: ["Task Name", "Estimated Time", "Days of the Week", "Edit"],
+      todoHeaders: ["Task Name", "Estimated Time", "Days of the Week", "Add"],
       todos: [
         {
           taskName: "Test",
@@ -41,6 +42,10 @@ class EditTasksTable extends React.Component<EditTasksTableProps, EditTasksTable
     }
   }
 
+  addTodo() {
+
+  }
+
   editTodo(i: number) {
     console.log(i);
   }
@@ -51,15 +56,29 @@ class EditTasksTable extends React.Component<EditTasksTableProps, EditTasksTable
 
   render() {
     return (
-      <div className='edit-tasks-table'>
+      <div className='manage-tasks-table'>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
                 {this.state.todoHeaders.map((header: string) => {
-                  return (
-                    <TableCell>{header}</TableCell>
-                  );
+                  if (header === "Add") {
+                    return (
+                      <TableCell>
+                        {header}
+                        <IconButton
+                          onClick={() => this.addTodo()}
+                        >
+                          <AddIcon />
+                        </IconButton>
+                      </TableCell>
+                    );
+                  }
+                  else {
+                    return (
+                      <TableCell>{header}</TableCell>
+                    );
+                  }
                 })}
               </TableRow>
             </TableHead>
@@ -106,4 +125,4 @@ function getDaysOfWeekText(daysOfWeek: DaysOfWeek): string {
   return daysOfWeekText;
 }
 
-export default EditTasksTable;
+export default ManageTasksTable;
