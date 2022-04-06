@@ -15,7 +15,7 @@ function App() {
           <Router>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/create-tasks" element={<ManageTasks />} />
+              <Route path="/manage-tasks" element={<ManageTasks />} />
               <Route path="/stats" element={<Stats />} />
             </Routes>
           </Router>

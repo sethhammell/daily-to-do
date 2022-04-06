@@ -10,7 +10,7 @@ import Divider from '@mui/material/Divider';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import HomeIcon from '@mui/icons-material/Home';
-import CreateIcon from '@mui/icons-material/Create';
+import EditIcon from '@mui/icons-material/Create';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import { useNavigate } from "react-router-dom";
 import "./sidenav.css"
@@ -36,11 +36,11 @@ export default function Sidenav() {
           </ListItemIcon>
           <ListItemText primary="Home" />
         </ListItem>
-        <ListItem button onClick={() => { navigate("/create-tasks") }}>
+        <ListItem button onClick={() => { navigate("/manage-tasks") }}>
           <ListItemIcon>
-            <CreateIcon />
+            <EditIcon />
           </ListItemIcon>
-          <ListItemText primary="Create Tasks" />
+          <ListItemText primary="Manage Tasks" />
         </ListItem>
         <ListItem button onClick={() => { navigate("/stats") }}>
           <ListItemIcon>
