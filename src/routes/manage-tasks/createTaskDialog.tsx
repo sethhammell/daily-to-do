@@ -8,14 +8,16 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { DaysOfWeek } from '../../interfaces/daysOfWeek';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Todo } from '../../interfaces/todo';
 
 interface CreateTaskDialogProps {
   open: boolean;
   closeCreateTaskDialog(): void;
+  createTodo(todo: Todo): Promise<void>;
 }
 interface CreateTaskDialogState {
   taskName: string;
-  estimatedTime: number | null;
+  estimatedTime: string;
   days: string[];
   daysOfWeek: DaysOfWeek;
 }
@@ -24,7 +26,7 @@ class CreateTaskDialog extends React.Component<CreateTaskDialogProps, CreateTask
     super(props);
     this.state = {
       taskName: "",
-      estimatedTime: null,
+      estimatedTime: "",
       days: [],
       daysOfWeek: {
         sunday: false,
@@ -46,7 +48,7 @@ class CreateTaskDialog extends React.Component<CreateTaskDialogProps, CreateTask
 
   estimatedTimeChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({
-      estimatedTime: +e.target.value
+      estimatedTime: e.target.value
     });
   }
 
@@ -55,6 +57,17 @@ class CreateTaskDialog extends React.Component<CreateTaskDialogProps, CreateTask
       days: newDays,
       daysOfWeek: daysToDaysOfWeek(newDays)
     });
+  }
+
+  async create() {
+    this.props.closeCreateTaskDialog();
+    const todo: Todo = {
+      clientId: "",
+      taskName: this.state.taskName,
+      estimatedTime: +this.state.estimatedTime!,
+      daysOfWeek: this.state.daysOfWeek
+    }
+    await this.props.createTodo(todo);
   }
 
   render() {
@@ -95,7 +108,7 @@ class CreateTaskDialog extends React.Component<CreateTaskDialogProps, CreateTask
           </DialogContent>
           <DialogActions>
             <Button onClick={this.props.closeCreateTaskDialog}>Cancel</Button>
-            <Button onClick={this.props.closeCreateTaskDialog}>Create</Button>
+            <Button onClick={this.create.bind(this)}>Create</Button>
           </DialogActions>
         </Dialog>
       </div>

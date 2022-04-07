@@ -52,22 +52,23 @@ class ManageTasks extends React.Component<ManageTasksProps, ManageTasksState> {
     // setTodos(apiData.data.listTodos.items);
   }
 
-  async createTodo() {
-    // if (!clientId) return;
-    const todo: Todo = {
-      clientId: this.state.clientId!,
-      taskName: "Test",
-      estimatedTime: 121,
-      daysOfWeek: {
-        sunday: false,
-        monday: true,
-        tuesday: false,
-        wednesday: false,
-        thursday: false,
-        friday: false,
-        saturday: false,
-      }
-    }
+  async createTodo(todo: Todo) {
+    if (!this.state.clientId) return;
+    todo.clientId = this.state.clientId;
+    // const todo: Todo = {
+    //   clientId: this.state.clientId!,
+    //   taskName: "Test",
+    //   estimatedTime: 121,
+    //   daysOfWeek: {
+    //     sunday: false,
+    //     monday: true,
+    //     tuesday: false,
+    //     wednesday: false,
+    //     thursday: false,
+    //     friday: false,
+    //     saturday: false,
+    //   }
+    // }
     // if (!formData.name || !formData.description) return;
     const newData: any = await API.graphql({ query: createTodoMutation, variables: { input: todo } });
     const newTodo = newData.data.createTodo;
@@ -102,9 +103,11 @@ class ManageTasks extends React.Component<ManageTasksProps, ManageTasksState> {
           <CreateTaskDialog
             open={this.state.showCreateTaskDialog}
             closeCreateTaskDialog={this.closeCreateTaskDialog.bind(this)}
+            createTodo={this.createTodo.bind(this)}
           ></CreateTaskDialog>
         </div>
-        {/* <h1>My Todos App</h1>
+      </div>
+        /*{ <h1>My Todos App</h1>
       <input
         onChange={e => setFormData({ ...formData, 'name': e.target.value })}
         placeholder="Todo name"
@@ -129,8 +132,7 @@ class ManageTasks extends React.Component<ManageTasksProps, ManageTasksState> {
             </div>
           ))
         }
-      </div> */}
-      </div>
+      </div> }*/
     );
   }
 }
