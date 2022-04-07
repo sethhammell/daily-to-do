@@ -1,10 +1,13 @@
 import { DaysOfWeek } from "./daysOfWeek";
 
 export interface Todo extends TodoData {
-  clientId: string;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface TodoData {
+  clientId: string;
   taskName: string;
   estimatedTime: number;
   daysOfWeek: DaysOfWeek;

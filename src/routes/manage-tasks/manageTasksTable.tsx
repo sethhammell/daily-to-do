@@ -1,5 +1,5 @@
 import React from 'react';
-import { TodoData } from '../../interfaces/todo';
+import { Todo } from '../../interfaces/todo';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -15,32 +15,17 @@ import { DaysOfWeek } from '../../interfaces/daysOfWeek';
 import { IconButton } from '@mui/material';
 
 interface ManageTasksTableProps {
+  todos: Todo[];
   openCreateTaskDialog(): void;
 }
 interface ManageTasksTableState {
   todoHeaders: string[];
-  todos: TodoData[];
 }
 class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTasksTableState> {
   constructor(props: ManageTasksTableProps) {
     super(props);
     this.state = {
-      todoHeaders: ["Task Name", "Estimated Time", "Days of the Week", "Add"],
-      todos: [
-        {
-          taskName: "Test",
-          estimatedTime: 20,
-          daysOfWeek: {
-            sunday: false,
-            monday: false,
-            tuesday: true,
-            wednesday: false,
-            thursday: false,
-            friday: false,
-            saturday: false,
-          }
-        }
-      ]
+      todoHeaders: ["Task Name", "Estimated Time", "Days of the Week", "Add"]
     };
   }
 
@@ -85,7 +70,7 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
               </TableRow>
             </TableHead>
             <TableBody>
-              {this.state.todos.map((todo: TodoData, i: number) => {
+              {this.props.todos.map((todo: Todo, i: number) => {
                 return (
                   <TableRow key={i}>
                     <TableCell>{todo.taskName}</TableCell>

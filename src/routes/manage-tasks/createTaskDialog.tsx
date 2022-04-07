@@ -8,12 +8,12 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { DaysOfWeek } from '../../interfaces/daysOfWeek';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { Todo } from '../../interfaces/todo';
+import { TodoData } from '../../interfaces/todo';
 
 interface CreateTaskDialogProps {
   open: boolean;
   closeCreateTaskDialog(): void;
-  createTodo(todo: Todo): Promise<void>;
+  createTodo(todo: TodoData): Promise<void>;
 }
 interface CreateTaskDialogState {
   taskName: string;
@@ -61,7 +61,7 @@ class CreateTaskDialog extends React.Component<CreateTaskDialogProps, CreateTask
 
   async create() {
     this.props.closeCreateTaskDialog();
-    const todo: Todo = {
+    const todo: TodoData = {
       clientId: "",
       taskName: this.state.taskName,
       estimatedTime: +this.state.estimatedTime!,
