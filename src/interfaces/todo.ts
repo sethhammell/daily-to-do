@@ -1,9 +1,12 @@
 import { DaysOfWeek } from "./daysOfWeek";
 
-export interface Todo extends TodoData {
-  id: string;
+export interface Todo extends TodoDataId {
   createdAt: string;
   updatedAt: string;
+}
+
+export interface TodoDataId extends TodoData {
+  id: string;
 }
 
 export interface TodoData {

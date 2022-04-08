@@ -8,36 +8,50 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { DaysOfWeek } from '../../interfaces/daysOfWeek';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { TodoData } from '../../interfaces/todo';
+import { TodoData, TodoDataId } from '../../interfaces/todo';
 
-interface CreateTaskDialogProps {
-  open: boolean;
-  closeCreateTaskDialog(): void;
-  createTodo(todo: TodoData): Promise<void>;
+const manageTaskDialogDefaultState: ManageTaskDialogState = {
+  id: "",
+  taskName: "",
+  estimatedTime: "",
+  days: [],
+  daysOfWeek: {
+    sunday: false,
+    monday: false,
+    tuesday: false,
+    wednesday: false,
+    thursday: false,
+    friday: false,
+    saturday: false
+  }
 }
-interface CreateTaskDialogState {
+
+interface ManageTaskDialogProps {
+  open: boolean;
+  editTask?: boolean;
+  closeManageTaskDialog(): void;
+  createTodo(todo: TodoData): Promise<void>;
+  editTodo(todo: TodoDataId): Promise<void>;
+}
+interface ManageTaskDialogState {
+  id: string;
   taskName: string;
   estimatedTime: string;
   days: string[];
   daysOfWeek: DaysOfWeek;
 }
-class CreateTaskDialog extends React.Component<CreateTaskDialogProps, CreateTaskDialogState> {
-  constructor(props: CreateTaskDialogProps) {
+class ManageTaskDialog extends React.Component<ManageTaskDialogProps, ManageTaskDialogState> {
+  public static defaultProps: Partial<ManageTaskDialogProps> = {
+    editTask: false
+  }
+
+  constructor(props: ManageTaskDialogProps) {
     super(props);
-    this.state = {
-      taskName: "",
-      estimatedTime: "",
-      days: [],
-      daysOfWeek: {
-        sunday: false,
-        monday: false,
-        tuesday: false,
-        wednesday: false,
-        thursday: false,
-        friday: false,
-        saturday: false
-      }
-    };
+    this.state = manageTaskDialogDefaultState;
+  }
+
+  setDefaultState() {
+    this.setState(manageTaskDialogDefaultState);
   }
 
   taskNameChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -60,7 +74,7 @@ class CreateTaskDialog extends React.Component<CreateTaskDialogProps, CreateTask
   }
 
   async create() {
-    this.props.closeCreateTaskDialog();
+    this.props.closeManageTaskDialog();
     const todo: TodoData = {
       clientId: "",
       taskName: this.state.taskName,
@@ -68,14 +82,45 @@ class CreateTaskDialog extends React.Component<CreateTaskDialogProps, CreateTask
       daysOfWeek: this.state.daysOfWeek
     }
     await this.props.createTodo(todo);
+    this.setState(manageTaskDialogDefaultState);
+  }
+
+  async editTodo() {
+    this.props.closeManageTaskDialog();
+    const todo: TodoDataId = {
+      id: this.state.id,
+      clientId: "",
+      taskName: this.state.taskName,
+      estimatedTime: +this.state.estimatedTime!,
+      daysOfWeek: this.state.daysOfWeek
+    }
+    await this.props.editTodo(todo);
+    this.setState(manageTaskDialogDefaultState);
+  }
+
+  titleText(): string {
+    return this.props.editTask ? "Edit" : "Create New";
+  }
+
+  operationText(): string {
+    return this.props.editTask ? "Edit" : "Create";
+  }
+
+  confirmTaskAction() {
+    if (this.props.editTask) {
+      this.editTodo();
+    }
+    else {
+      this.create();
+    }
   }
 
   render() {
     return (
       <div>
-        <Dialog open={this.props.open} onClose={this.props.closeCreateTaskDialog}>
-          <DialogTitle>Create New Task</DialogTitle>
-          <DialogContent className='create-task-fields'>
+        <Dialog open={this.props.open} onClose={this.props.closeManageTaskDialog}>
+          <DialogTitle>{this.titleText()} Task</DialogTitle>
+          <DialogContent className='delete-task-fields'>
             <TextField
               value={this.state.taskName}
               onChange={this.taskNameChange.bind(this)}
@@ -84,13 +129,13 @@ class CreateTaskDialog extends React.Component<CreateTaskDialogProps, CreateTask
               label="Task Name"
             />
             <TextField
-              className='create-task-text-field'
+              className='delete-task-text-field'
               value={this.state.estimatedTime}
               onChange={this.estimatedTimeChange.bind(this)}
               margin="dense"
               label="Estimated Time"
             />
-            <DialogContentText className='create-task-days-heading'>Days of the Week</DialogContentText>
+            <DialogContentText className='delete-task-days-heading'>Days of the Week</DialogContentText>
             <ToggleButtonGroup
               color="primary"
               size="small"
@@ -107,8 +152,8 @@ class CreateTaskDialog extends React.Component<CreateTaskDialogProps, CreateTask
             </ToggleButtonGroup>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.props.closeCreateTaskDialog}>Cancel</Button>
-            <Button onClick={this.create.bind(this)}>Create</Button>
+            <Button onClick={this.props.closeManageTaskDialog}>Cancel</Button>
+            <Button onClick={this.confirmTaskAction.bind(this)}>{this.operationText()}</Button>
           </DialogActions>
         </Dialog>
       </div>
@@ -123,9 +168,9 @@ function daysToDaysOfWeek(days: string[]): DaysOfWeek {
     tuesday: days.includes("tuesday"),
     wednesday: days.includes("wednesday"),
     thursday: days.includes("thursday"),
-    friday: days.includes("fridayday"),
+    friday: days.includes("friday"),
     saturday: days.includes("saturday")
   };
 }
 
-export default CreateTaskDialog;
+export default ManageTaskDialog;

@@ -1,5 +1,11 @@
 import React from 'react';
 import { Todo } from '../../interfaces/todo';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -16,29 +22,48 @@ import { IconButton } from '@mui/material';
 
 interface ManageTasksTableProps {
   todos: Todo[];
-  openCreateTaskDialog(): void;
+  openManageTaskDialog(editTask?: boolean, id?: string): void;
+  deleteTodo(id: string): Promise<void>;
 }
 interface ManageTasksTableState {
   todoHeaders: string[];
+  open: boolean;
+  deleteId: string;
 }
 class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTasksTableState> {
   constructor(props: ManageTasksTableProps) {
     super(props);
     this.state = {
-      todoHeaders: ["Task Name", "Estimated Time", "Days of the Week", "Add"]
+      todoHeaders: ["Task Name", "Estimated Time", "Days of the Week", "Add"],
+      open: false,
+      deleteId: ""
     };
   }
 
-  editTodo(i: number) {
-    console.log(i);
-  }
-
-  deleteTodo(i: number) {
+  editTodo(i: string) {
     console.log(i);
   }
 
   lastHeading(): string {
     return this.state.todoHeaders[this.state.todoHeaders.length - 1];
+  }
+
+  openDeleteTaskDialog() {
+    this.setState({ open: true });
+  }
+
+  closeDeleteTaskDialog() {
+    this.setState({ open: false });
+  }
+
+  deleteConfirmation(id: string) {
+    this.setState({ deleteId: id });
+    this.openDeleteTaskDialog();
+  }
+
+  deleteConfirmed(id: string) {
+    this.closeDeleteTaskDialog();
+    this.props.deleteTodo(id);
   }
 
   render() {
@@ -54,7 +79,7 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
                       <TableCell>
                         {header}
                         <IconButton
-                          onClick={() => this.props.openCreateTaskDialog()}
+                          onClick={() => this.props.openManageTaskDialog()}
                         >
                           <AddIcon />
                         </IconButton>
@@ -70,20 +95,20 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
               </TableRow>
             </TableHead>
             <TableBody>
-              {this.props.todos.map((todo: Todo, i: number) => {
+              {this.props.todos.map((todo: Todo) => {
                 return (
-                  <TableRow key={i}>
+                  <TableRow key={todo.id}>
                     <TableCell>{todo.taskName}</TableCell>
                     <TableCell>{todo.estimatedTime}</TableCell>
                     <TableCell>{getDaysOfWeekText(todo.daysOfWeek)}</TableCell>
                     <TableCell>
                       <IconButton
-                        onClick={() => this.editTodo(i)}
+                        onClick={() => this.props.openManageTaskDialog(true, todo.id)}
                       >
                         <EditIcon />
                       </IconButton>
                       <IconButton
-                        onClick={() => this.deleteTodo(i)}
+                        onClick={() => this.deleteConfirmation(todo.id)}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -94,6 +119,16 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
             </TableBody>
           </Table>
         </TableContainer>
+        <Dialog open={this.state.open} onClose={this.closeDeleteTaskDialog}>
+          <DialogTitle>Confirm Deletion</DialogTitle>
+          <DialogContent>
+            <DialogContentText>Are you sure you want to delete this task?</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.closeDeleteTaskDialog.bind(this)}>Cancel</Button>
+            <Button onClick={() => this.deleteConfirmed(this.state.deleteId)}>Delete</Button>
+          </DialogActions>
+        </Dialog>
       </div>
     );
   }

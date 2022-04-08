@@ -2,27 +2,32 @@ import React from 'react';
 import './manageTasks.css';
 import Sidenav from "../../sidenav/sidenav";
 import ManageTasksTable from "./manageTasksTable";
-import CreateTaskDialog from './createTaskDialog';
-import { Todo } from "../../interfaces/todo";
+import ManageTaskDialog from './manageTaskDialog';
+import { Todo, TodoData, TodoDataId } from "../../interfaces/todo";
 
 import { API } from 'aws-amplify';
 import { Auth } from 'aws-amplify';
 import { listTodos } from '../../graphql/queries';
-import { createTodo as createTodoMutation, deleteTodo as deleteTodoMutation } from '../../graphql/mutations';
+import { createTodo as createTodoMutation, deleteTodo as deleteTodoMutation, updateTodo as updateTodoMutation } from '../../graphql/mutations';
+import { DaysOfWeek } from '../../interfaces/daysOfWeek';
 
 interface ManageTasksProps { }
 interface ManageTasksState {
+  child: React.RefObject<ManageTaskDialog>;
   todos: Todo[];
   clientId: string | null;
-  showCreateTaskDialog: boolean;
+  showManageTaskDialog: boolean;
+  editTask: boolean;
 }
 class ManageTasks extends React.Component<ManageTasksProps, ManageTasksState> {
   constructor(props: ManageTasksProps) {
     super(props);
     this.state = {
+      child: React.createRef(),
       todos: [],
       clientId: null,
-      showCreateTaskDialog: false
+      showManageTaskDialog: false,
+      editTask: false
     };
   }
 
@@ -55,7 +60,7 @@ class ManageTasks extends React.Component<ManageTasksProps, ManageTasksState> {
     }
   }
 
-  async createTodo(todo: Todo) {
+  async createTodo(todo: TodoData) {
     if (!this.state.clientId) return;
     todo.clientId = this.state.clientId;
     const newData: any = await API.graphql({ query: createTodoMutation, variables: { input: todo } });
@@ -63,19 +68,58 @@ class ManageTasks extends React.Component<ManageTasksProps, ManageTasksState> {
     this.setState({ todos: [...this.state.todos, newTodo] });
   }
 
-  async deleteTodo(todo: any) {
-    const id = todo.id;
+  async deleteTodo(id: string) {
     const newTodosArray = this.state.todos.filter((todo: any) => todo.id !== id);
     this.setState({ todos: newTodosArray });
     await API.graphql({ query: deleteTodoMutation, variables: { input: { id } } });
   }
 
-  openCreateTaskDialog() {
-    this.setState({ showCreateTaskDialog: true });
+  async editTodo(todo: TodoDataId) {
+    if (!this.state.clientId) return;
+    todo.clientId = this.state.clientId;
+    const newData: any = await API.graphql({ query: updateTodoMutation, variables: { input: todo } });
+    
+    const newTodo = newData.data.updateTodo;
+    const newTodosArray = this.state.todos.map((td: any) => {
+      if (td.id === todo.id) {
+        return newTodo;
+      }
+      else {
+        return td;
+      }
+    });
+    this.setState({ todos: [...newTodosArray] });
   }
 
-  closeCreateTaskDialog() {
-    this.setState({ showCreateTaskDialog: false });
+  openManageTaskDialog(editTask: boolean = false, id: string = "") {
+    if (editTask) {
+      this.setEditedTodo(id);
+    }
+    else {
+      this.state.child.current?.setDefaultState();
+    }
+    this.setState({
+      editTask: editTask,
+      showManageTaskDialog: true
+    });
+  }
+
+  closeManageTaskDialog() {
+    this.setState({ showManageTaskDialog: false });
+  }
+
+  setEditedTodo(id: string) {
+    const editedTodoArray = this.state.todos.filter((todo: any) => todo.id === id);
+    if (editedTodoArray.length) {
+      const editedTodo = editedTodoArray[0];
+      this.state.child.current?.setState({
+        id: id,
+        taskName: editedTodo.taskName,
+        estimatedTime: editedTodo.estimatedTime.toString(),
+        days: daysOfWeekToDays(editedTodo.daysOfWeek),
+        daysOfWeek: editedTodo.daysOfWeek
+      });
+    }
   }
 
   render() {
@@ -85,13 +129,17 @@ class ManageTasks extends React.Component<ManageTasksProps, ManageTasksState> {
         <div className='manage-tasks-table-container'>
           <ManageTasksTable
             todos={this.state.todos}
-            openCreateTaskDialog={this.openCreateTaskDialog.bind(this)}
+            openManageTaskDialog={this.openManageTaskDialog.bind(this)}
+            deleteTodo={this.deleteTodo.bind(this)}
           ></ManageTasksTable>
-          <CreateTaskDialog
-            open={this.state.showCreateTaskDialog}
-            closeCreateTaskDialog={this.closeCreateTaskDialog.bind(this)}
+          <ManageTaskDialog
+            ref={this.state.child}
+            open={this.state.showManageTaskDialog}
+            editTask={this.state.editTask}
+            closeManageTaskDialog={this.closeManageTaskDialog.bind(this)}
             createTodo={this.createTodo.bind(this)}
-          ></CreateTaskDialog>
+            editTodo={this.editTodo.bind(this)}
+          ></ManageTaskDialog>
         </div>
       </div>
     );
@@ -107,6 +155,18 @@ async function getClientId(): Promise<string> {
     console.log(err);
     return '';
   };
+}
+
+function daysOfWeekToDays(daysOfWeek: DaysOfWeek): string[] {
+  const days: string[] = [];
+  if (daysOfWeek.sunday) days.push("sunday");
+  if (daysOfWeek.monday) days.push("monday");
+  if (daysOfWeek.tuesday) days.push("tuesday");
+  if (daysOfWeek.wednesday) days.push("wednesday");
+  if (daysOfWeek.thursday) days.push("thursday");
+  if (daysOfWeek.friday) days.push("friday");
+  if (daysOfWeek.saturday) days.push("saturday");
+  return days;
 }
 
 export default ManageTasks;
