@@ -15,3 +15,8 @@ export interface TodoData {
   estimatedTime: number;
   daysOfWeek: DaysOfWeek;
 }
+
+export interface TodoCompletionData {
+  completed: boolean;
+  timeSpent: number;
+}

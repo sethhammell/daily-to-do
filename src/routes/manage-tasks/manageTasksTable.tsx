@@ -26,7 +26,6 @@ interface ManageTasksTableProps {
   deleteTodo(id: string): Promise<void>;
 }
 interface ManageTasksTableState {
-  todoHeaders: string[];
   open: boolean;
   deleteId: string;
 }
@@ -34,7 +33,6 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
   constructor(props: ManageTasksTableProps) {
     super(props);
     this.state = {
-      todoHeaders: ["Task Name", "Estimated Time", "Days of the Week", "Add"],
       open: false,
       deleteId: ""
     };
@@ -42,10 +40,6 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
 
   editTodo(i: string) {
     console.log(i);
-  }
-
-  lastHeading(): string {
-    return this.state.todoHeaders[this.state.todoHeaders.length - 1];
   }
 
   openDeleteTaskDialog() {
@@ -67,14 +61,16 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
   }
 
   render() {
+    const todoHeaders: string[] = ["Task Name", "Estimated Time", "Days of the Week", "Add"];
+
     return (
       <div className='manage-tasks-table'>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
-                {this.state.todoHeaders.map((header: string) => {
-                  if (header === this.lastHeading()) {
+                {todoHeaders.map((header: string, i: number) => {
+                  if (i === todoHeaders.length - 1) {
                     return (
                       <TableCell>
                         {header}

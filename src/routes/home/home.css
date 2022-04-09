@@ -9,3 +9,16 @@
   display: flex;
   justify-content: center;
 }
+
+.home-tasks-table {
+  height: 60%;
+  width: 60%;
+}
+
+.completed-column {
+  width: 10%;
+}
+
+.time-spent-column {
+  width: 35%;
+}
