@@ -12,13 +12,15 @@ interface HomeProps { }
 interface HomeState {
   todos: Todo[];
   clientId: string;
+  todosDate: Date;
 }
 class Home extends React.Component<HomeProps, HomeState> {
   constructor(props: HomeProps) {
     super(props);
     this.state = {
       todos: [],
-      clientId: ""
+      clientId: "",
+      todosDate: new Date()
     }
   }
 
@@ -40,9 +42,11 @@ class Home extends React.Component<HomeProps, HomeState> {
           }
         }
       }) as { [key: string]: any };
-
       if (apiData.data?.listTodos?.items === undefined) return;
-      const newTodos = apiData.data.listTodos.items as Todo[];
+
+      const filterDayOfWeek = dayOfWeekFilter(apiData.data.listTodos.items, this.state.todosDate);
+
+      const newTodos = filterDayOfWeek as Todo[];
       this.setState({
         todos: newTodos
       });
@@ -78,6 +82,32 @@ async function getClientId(): Promise<string> {
     console.log(err);
     return '';
   };
+}
+
+function dayOfWeekFilter(todos: Todo[], date: Date): Todo[] {
+  const dayOfWeek = date.toLocaleString(
+    'default', { weekday: 'long' }
+  );
+
+  const newTodos = todos.filter((todo: Todo) => {
+    if (dayOfWeek === "Sunday")
+      return todo.daysOfWeek.sunday;
+    if (dayOfWeek === "Monday")
+      return todo.daysOfWeek.monday;
+    if (dayOfWeek === "Tuesday")
+      return todo.daysOfWeek.tuesday;
+    if (dayOfWeek === "Wednesday")
+      return todo.daysOfWeek.wednesday;
+    if (dayOfWeek === "Thursday")
+      return todo.daysOfWeek.thursday;
+    if (dayOfWeek === "Friday")
+      return todo.daysOfWeek.friday;
+    if (dayOfWeek === "Saturday")
+      return todo.daysOfWeek.saturday;
+    return false;
+  });
+
+  return newTodos;
 }
 
 export default Home;
