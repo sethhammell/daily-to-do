@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
@@ -12,9 +11,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import HomeIcon from '@mui/icons-material/Home';
 import EditIcon from '@mui/icons-material/Create';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
-import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from "react-router-dom";
-import { Auth } from 'aws-amplify';
 import "./sidenav.css"
 
 export default function Sidenav() {
@@ -22,9 +19,6 @@ export default function Sidenav() {
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer = () => () => { setOpen(!open); };
-  const logOut = () => {
-    Auth.signOut().catch(err => console.log(err));
-  }
 
   const navlist = (
     <div>
@@ -53,33 +47,32 @@ export default function Sidenav() {
           </ListItemIcon>
           <ListItemText primary="Stats" />
         </ListItem>
-        <Divider />
-        <ListItem button onClick={logOut}>
-          <ListItemIcon>
-            <LogoutIcon />
-          </ListItemIcon>
-          <ListItemText primary="Log Out" />
-        </ListItem>
       </List>
     </div>
   );
 
   return (
-    <Box>
-      <div>
-        <IconButton onClick={toggleDrawer()}><MenuIcon /></IconButton>
-        <Drawer open={open} onClose={toggleDrawer()}>
-          <div
-            tabIndex={0}
-            role="button"
-            onClick={toggleDrawer()}
-            onKeyDown={toggleDrawer()}
-            className="nav"
-          >
-            {navlist}
-          </div>
-        </Drawer>
-      </div>
-    </Box>
+    <div>
+      <IconButton
+        size="large"
+        edge="start"
+        color="inherit"
+        className='menu-button'
+        onClick={toggleDrawer()}
+      >
+        <MenuIcon />
+      </IconButton>
+      <Drawer open={open} onClose={toggleDrawer()}>
+        <div
+          tabIndex={0}
+          role="button"
+          onClick={toggleDrawer()}
+          onKeyDown={toggleDrawer()}
+          className="nav"
+        >
+          {navlist}
+        </div>
+      </Drawer>
+    </div>
   );
 }

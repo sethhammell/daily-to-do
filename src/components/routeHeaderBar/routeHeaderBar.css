@@ -1,0 +1,11 @@
+.route-header-bar-container {
+  margin-bottom: 100px;
+}
+
+.menu-button {
+  margin-right: 15px;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}

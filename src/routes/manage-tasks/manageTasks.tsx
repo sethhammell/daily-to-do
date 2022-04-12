@@ -1,15 +1,15 @@
 import React from 'react';
-import './manageTasks.css';
-import Sidenav from "../../sidenav/sidenav";
 import ManageTasksTable from "./manageTasksTable";
 import ManageTaskDialog from './manageTaskDialog';
 import { Todo, TodoData, TodoDataId } from "../../interfaces/todo";
+import './manageTasks.css';
 
 import { API } from 'aws-amplify';
 import { Auth } from 'aws-amplify';
 import { listTodos } from '../../graphql/queries';
 import { createTodo as createTodoMutation, deleteTodo as deleteTodoMutation, updateTodo as updateTodoMutation } from '../../graphql/mutations';
 import { DaysOfWeek } from '../../interfaces/daysOfWeek';
+import RouteHeaderBar from '../../components/routeHeaderBar/routeHeaderBar';
 
 interface ManageTasksProps { }
 interface ManageTasksState {
@@ -125,7 +125,7 @@ class ManageTasks extends React.Component<ManageTasksProps, ManageTasksState> {
   render() {
     return (
       <div>
-        <Sidenav />
+        <RouteHeaderBar routeName='Manage Tasks' />
         <div className='manage-tasks-table-container'>
           <ManageTasksTable
             todos={this.state.todos}

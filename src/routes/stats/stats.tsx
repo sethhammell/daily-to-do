@@ -1,11 +1,10 @@
 import "./stats.css";
-import Sidenav from "../../sidenav/sidenav";
+import RouteHeaderBar from "../../components/routeHeaderBar/routeHeaderBar";
 
 function Stats() {
   return (
     <div>
-      <Sidenav />
-      Stats
+      <RouteHeaderBar routeName="Stats" />
     </div>
   );
 }

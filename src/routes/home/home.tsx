@@ -1,6 +1,6 @@
 import React from 'react';
 import HomeTasksTable from "./homeTasksTable";
-import Sidenav from "../../sidenav/sidenav";
+import RouteHeaderBar from "../../components/routeHeaderBar/routeHeaderBar";
 import { Todo } from "../../interfaces/todo";
 import "./home.css";
 
@@ -58,7 +58,7 @@ class Home extends React.Component<HomeProps, HomeState> {
   render() {
     return (
       <div className="home">
-        <Sidenav />
+        <RouteHeaderBar routeName="Home" />
         {(() => {
           if (this.state.todos.length) {
             return (
