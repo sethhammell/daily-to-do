@@ -71,14 +71,16 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
                   <TableRow key={todo.id}>
                     <TableCell>
                       <Checkbox
-                        checked={this.state.todoCompletionData[todo.id].completed}
+                        // checked={this.state.todoCompletionData[todo.id].completed}
+                        checked={false}
                         onChange={() => this.completedChange.bind(this)(todo.id)} />
                     </TableCell>
                     <TableCell>{todo.taskName}</TableCell>
                     <TableCell>{todo.estimatedTime}</TableCell>
                     <TableCell>
                       <TextField
-                        value={this.state.todoCompletionData[todo.id].timeSpent}
+                        // value={this.state.todoCompletionData[todo.id].timeSpent}
+                        value={0}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.timeSpentChange.bind(this)(e, todo.id)}
                         margin="dense"
                       />

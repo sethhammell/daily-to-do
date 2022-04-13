@@ -12,6 +12,7 @@ import DateInterface from './dateInterface';
 interface HomeProps { }
 interface HomeState {
   todos: Todo[];
+  allTodos: Todo[];
   clientId: string;
   todosDate: Date;
 }
@@ -20,6 +21,7 @@ class Home extends React.Component<HomeProps, HomeState> {
     super(props);
     this.state = {
       todos: [],
+      allTodos: [],
       clientId: "",
       todosDate: new Date()
     }
@@ -45,15 +47,25 @@ class Home extends React.Component<HomeProps, HomeState> {
       }) as { [key: string]: any };
       if (apiData.data?.listTodos?.items === undefined) return;
 
-      const filterDayOfWeek = dayOfWeekFilter(apiData.data.listTodos.items, this.state.todosDate);
-
-      const newTodos = filterDayOfWeek as Todo[];
-      this.setState({
-        todos: newTodos
-      });
+      this.setState({allTodos: apiData.data.listTodos.items});
+      this.updateTodos();
     } catch (error) {
       console.log(error);
     }
+  }
+
+  updateTodos() {
+    const filterDayOfWeek = dayOfWeekFilter(this.state.allTodos, this.state.todosDate);
+
+    const newTodos = filterDayOfWeek as Todo[];
+    this.setState({
+      todos: newTodos
+    });
+  }
+
+  updateTodosDate(newDate: Date) {
+    this.setState({ todosDate: newDate });
+    this.updateTodos();
   }
 
   render() {
@@ -65,13 +77,13 @@ class Home extends React.Component<HomeProps, HomeState> {
             return (
               <div className='home-container'>
                 <div className='date-container'>
-                  <DateInterface toodsDate={this.state.todosDate} />
+                  <DateInterface toodsDate={this.state.todosDate} updateTodosDate={this.updateTodosDate.bind(this)} />
                 </div>
                 <div className="tasks">
                   <HomeTasksTable todos={this.state.todos} />
                 </div>
               </div>
-            )
+            );
           }
         })()}
       </div>
