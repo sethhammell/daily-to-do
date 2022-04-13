@@ -7,6 +7,7 @@ import "./home.css";
 import { API } from 'aws-amplify';
 import { Auth } from 'aws-amplify';
 import { listTodos } from '../../graphql/queries';
+import DateInterface from './dateInterface';
 
 interface HomeProps { }
 interface HomeState {
@@ -62,8 +63,13 @@ class Home extends React.Component<HomeProps, HomeState> {
         {(() => {
           if (this.state.todos.length) {
             return (
-              <div className="tasks">
-                <HomeTasksTable todos={this.state.todos} />
+              <div className='home-container'>
+                <div className='date-container'>
+                  <DateInterface toodsDate={this.state.todosDate} />
+                </div>
+                <div className="tasks">
+                  <HomeTasksTable todos={this.state.todos} />
+                </div>
               </div>
             )
           }

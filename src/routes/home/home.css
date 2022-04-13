@@ -3,6 +3,17 @@
   width: 100%;
 }
 
+.home-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-container {
+  padding-bottom: 60px;
+  width: 20%;
+  align-self: center;
+}
+
 .tasks {
   height: inherit;
   /* width: 100vw */
