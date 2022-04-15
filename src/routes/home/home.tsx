@@ -77,7 +77,7 @@ class Home extends React.Component<HomeProps, HomeState> {
             return (
               <div className='home-container'>
                 <div className='date-container'>
-                  <DateInterface toodsDate={this.state.todosDate} updateTodosDate={this.updateTodosDate.bind(this)} />
+                  <DateInterface todosDate={this.state.todosDate} updateTodosDate={this.updateTodosDate.bind(this)} />
                 </div>
                 <div className="tasks">
                   <HomeTasksTable todos={this.state.todos} />
