@@ -1,7 +1,18 @@
-.app {
-  /* height: 100vh; */
-}
-
 body {
   min-height: 50vh;
+}
+
+.header-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.welcome-header {
+  width: 50rem;
+  height: 5rem;
+  margin-top: 5px;
+  margin-bottom: 25px;
+  text-align: center;
+  font-size: 3rem;
+  font-weight: bold;
 }

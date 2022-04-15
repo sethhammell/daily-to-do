@@ -39,9 +39,9 @@ class DateInterface extends React.Component<DateInterfaceProps, DateInterfaceSta
     if (
       this.state.open
       && this.state.datePickerRef
-      && !this.state.datePickerRef?.current!.contains(event.target as HTMLDivElement)
+      && !this.state.datePickerRef.current?.contains(event.target as HTMLDivElement)
       && this.state.dateDisplayRef
-      && !this.state.dateDisplayRef?.current!.contains(event.target as HTMLDivElement)
+      && !this.state.dateDisplayRef.current?.contains(event.target as HTMLDivElement)
     ) {
       this.setState({ open: false });
     }

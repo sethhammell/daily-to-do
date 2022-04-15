@@ -1,27 +1,34 @@
-import React from "react";
-import Home from "./routes/home/home"
-import ManageTasks from "./routes/manage-tasks/manageTasks"
-import Stats from "./routes/stats/stats"
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Authenticator } from '@aws-amplify/ui-react';
+import { Card } from "@mui/material";
+import { useState } from "react";
+import MainRouter from './router';
 import '@aws-amplify/ui-react/styles.css';
 import "./App.css";
 
 function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+
   return (
-    <Authenticator>
-      {({ signOut, user }) => (
-        <div className="app">
-          <Router>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/manage-tasks" element={<ManageTasks />} />
-              <Route path="/stats" element={<Stats />} />
-            </Routes>
-          </Router>
-        </div >
-      )}
-    </Authenticator>
+    <div>
+      {(() => {
+        if (!loggedIn) {
+          return (
+            <div className="header-wrapper">
+              <Card className="welcome-header">
+                Welcome to Daily Todos
+              </Card>
+            </div>
+          );
+        }
+      })()}
+      <Authenticator>
+        {({ signOut, user }) => (
+          <div className="app">
+            <MainRouter setLoggedIn={setLoggedIn} />
+          </div >
+        )}
+      </Authenticator>
+    </div>
   );
 }
 
