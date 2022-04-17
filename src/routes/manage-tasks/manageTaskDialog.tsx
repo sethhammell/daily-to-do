@@ -79,7 +79,8 @@ class ManageTaskDialog extends React.Component<ManageTaskDialogProps, ManageTask
       clientId: "",
       taskName: this.state.taskName,
       estimatedTime: +this.state.estimatedTime!,
-      daysOfWeek: this.state.daysOfWeek
+      daysOfWeek: this.state.daysOfWeek,
+      todoCompletionData: []
     }
     await this.props.createTodo(todo);
     this.setState(manageTaskDialogDefaultState);
