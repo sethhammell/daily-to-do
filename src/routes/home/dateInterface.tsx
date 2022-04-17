@@ -78,7 +78,7 @@ class DateInterface extends React.Component<DateInterfaceProps, DateInterfaceSta
         </Card>
         <div className='date-display-container'>
           <div ref={this.state.dateDisplayRef}>
-            <Card className='date date-display'>
+            <Card className='date'>
               <CardActionArea onClick={this.toggleDatePicker.bind(this)}>
                 <CardContent>
                   <Typography align="center" gutterBottom variant="h5">

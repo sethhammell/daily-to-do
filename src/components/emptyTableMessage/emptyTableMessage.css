@@ -1,0 +1,13 @@
+.empty-table {
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Roboto';
+  font-size: 14pt;
+}
+
+.empty-table-text {
+  margin-bottom: 5px;
+}

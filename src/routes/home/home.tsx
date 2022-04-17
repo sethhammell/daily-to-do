@@ -1,5 +1,5 @@
 import React from 'react';
-import HomeTasksTable from "./homeTasksTable";
+import HomeTasksTableWithNav from "./homeTasksTable";
 import RouteHeaderBar from "../../components/routeHeaderBar/routeHeaderBar";
 import { Todo } from "../../interfaces/todo";
 import "./home.css";
@@ -78,7 +78,7 @@ class Home extends React.Component<HomeProps, HomeState> {
             <DateInterface todosDate={this.state.todosDate} updateTodosDate={this.updateTodosDate.bind(this)} />
           </div>
           <div className="tasks">
-            <HomeTasksTable todos={this.state.todos} />
+            <HomeTasksTableWithNav todos={this.state.todos} />
           </div>
         </div>
       </div>
@@ -91,8 +91,8 @@ async function getClientId(): Promise<string> {
     const data = await Auth.currentAuthenticatedUser();
     return data ? data.pool.clientId : '';
   }
-  catch (err) {
-    console.log(err);
+  catch (error) {
+    console.log(error);
     return '';
   };
 }

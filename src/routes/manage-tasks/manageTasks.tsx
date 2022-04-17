@@ -151,8 +151,8 @@ async function getClientId(): Promise<string> {
     const data = await Auth.currentAuthenticatedUser();
     return data ? data.pool.clientId : '';
   }
-  catch (err) {
-    console.log(err);
+  catch (error) {
+    console.log(error);
     return '';
   };
 }

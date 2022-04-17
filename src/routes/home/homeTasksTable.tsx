@@ -7,14 +7,15 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import './home.css';
 import { Checkbox, TextField } from '@mui/material';
+import './home.css';
+import EmptyTableMessage from '../../components/emptyTableMessage/emptyTableMessage';
 
 interface HomeTasksTableProps {
   todos: Todo[];
 }
 interface HomeTasksTableState {
-  todoCompletionData: { [key: string]: TodoCompletionData }
+  todoCompletionData: { [key: string]: TodoCompletionData };
 }
 class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTableState> {
   constructor(props: HomeTasksTableProps) {
@@ -25,29 +26,33 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
   }
 
   componentDidMount() {
-    const newTodoCompletionData: { [key: string]: TodoCompletionData } = {}
-    this.props.todos.forEach((todo) => {
-      newTodoCompletionData[todo.id] = { completed: false, timeSpent: 0 };
-    })
-    this.setState({ todoCompletionData: newTodoCompletionData });
+    // const newTodoCompletionData: { [key: string]: TodoCompletionData } = {}
+    // this.props.todos.forEach((todo) => {
+    //   newTodoCompletionData[todo.id] = { completed: false, timeSpent: 0 };
+    // })
+    // this.setState({ todoCompletionData: newTodoCompletionData });
   }
 
   timeSpentChange(e: React.ChangeEvent<HTMLInputElement>, id: string) {
-    const newTodoCompletionData = { ...this.state.todoCompletionData };
-    newTodoCompletionData[id].timeSpent = +e.target.value;
-    this.setState({ todoCompletionData: newTodoCompletionData });
+    // const newTodoCompletionData = { ...this.state.todoCompletionData };
+    // newTodoCompletionData[id].timeSpent = +e.target.value;
+    // this.setState({ todoCompletionData: newTodoCompletionData });
   }
 
   completedChange(id: string) {
-    const newTodoCompletionData = { ...this.state.todoCompletionData };
-    newTodoCompletionData[id].completed = !newTodoCompletionData[id].completed;
-    this.setState({ todoCompletionData: newTodoCompletionData });
+    // const newTodoCompletionData = { ...this.state.todoCompletionData };
+    // newTodoCompletionData[id].completed = !newTodoCompletionData[id].completed;
+    // this.setState({ todoCompletionData: newTodoCompletionData });
   }
 
   render() {
-    const emptyTable = !this.props.todos.length;
     const todoHeaders: string[] = ["Completed", "Task Name", "Estimated Time", "Time Spent"];
     const todoHeaderClasses: string[] = ["completed-column", "", "", "time-spent-column"];
+
+    const emptyTable = !this.props.todos.length;
+    const emptyTableMessage = "You have no tasks scheduled for today, click here to create some.";
+    const emptyTableButtonText = "Manage Tasks";
+    const emptyTableNavigate = "/manage-tasks";
 
     return (
       <div className='home-tasks-table'>
@@ -88,10 +93,7 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
             </TableBody>
           </Table>
         </TableContainer>
-        {emptyTable ?
-          <div className='empty-table'>
-            
-          </div> : null}
+        <EmptyTableMessage empty={emptyTable} message={emptyTableMessage} buttonText={emptyTableButtonText} nav={emptyTableNavigate} />
       </div>
     );
   }

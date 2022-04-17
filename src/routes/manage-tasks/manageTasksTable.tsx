@@ -19,6 +19,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import './manageTasks.css';
 import { DaysOfWeek } from '../../interfaces/daysOfWeek';
 import { IconButton } from '@mui/material';
+import EmptyTableMessage from '../../components/emptyTableMessage/emptyTableMessage';
 
 interface ManageTasksTableProps {
   todos: Todo[];
@@ -62,6 +63,9 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
 
   render() {
     const todoHeaders: string[] = ["Task Name", "Estimated Time", "Days of the Week", "Add"];
+
+    const emptyTable = !this.props.todos.length;
+    const emptyTableMessage = "No tasks created yet, press the 'Add' button to create a task.";
 
     return (
       <div className='manage-tasks-table'>
@@ -115,6 +119,7 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
             </TableBody>
           </Table>
         </TableContainer>
+        <EmptyTableMessage empty={emptyTable} message={emptyTableMessage} />
         <Dialog open={this.state.open} onClose={this.closeDeleteTaskDialog}>
           <DialogTitle>Confirm Deletion</DialogTitle>
           <DialogContent>
