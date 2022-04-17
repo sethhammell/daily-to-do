@@ -81,3 +81,9 @@
 .time-spent-column {
   width: 35%;
 }
+
+.empty-table {
+  height: 200px;
+  display: flex;
+  justify-content: center;
+}

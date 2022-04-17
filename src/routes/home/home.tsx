@@ -47,7 +47,7 @@ class Home extends React.Component<HomeProps, HomeState> {
       }) as { [key: string]: any };
       if (apiData.data?.listTodos?.items === undefined) return;
 
-      this.setState({allTodos: apiData.data.listTodos.items});
+      this.setState({ allTodos: apiData.data.listTodos.items });
       this.updateTodos();
     } catch (error) {
       console.log(error);
@@ -64,28 +64,23 @@ class Home extends React.Component<HomeProps, HomeState> {
   }
 
   updateTodosDate(newDate: Date) {
-    this.setState({ todosDate: newDate });
-    this.updateTodos();
+    this.setState({ todosDate: newDate }, () => {
+      this.updateTodos();
+    });
   }
 
   render() {
     return (
       <div className="home">
         <RouteHeaderBar routeName="Home" />
-        {(() => {
-          if (this.state.todos.length) {
-            return (
-              <div className='home-container'>
-                <div className='date-container'>
-                  <DateInterface todosDate={this.state.todosDate} updateTodosDate={this.updateTodosDate.bind(this)} />
-                </div>
-                <div className="tasks">
-                  <HomeTasksTable todos={this.state.todos} />
-                </div>
-              </div>
-            );
-          }
-        })()}
+        <div className='home-container'>
+          <div className='date-container'>
+            <DateInterface todosDate={this.state.todosDate} updateTodosDate={this.updateTodosDate.bind(this)} />
+          </div>
+          <div className="tasks">
+            <HomeTasksTable todos={this.state.todos} />
+          </div>
+        </div>
       </div>
     );
   }

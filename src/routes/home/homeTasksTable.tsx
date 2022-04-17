@@ -45,10 +45,7 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
   }
 
   render() {
-    if (Object.keys(this.state.todoCompletionData).length === 0) {
-      return null;
-    }
-
+    const emptyTable = !this.props.todos.length;
     const todoHeaders: string[] = ["Completed", "Task Name", "Estimated Time", "Time Spent"];
     const todoHeaderClasses: string[] = ["completed-column", "", "", "time-spent-column"];
 
@@ -91,6 +88,10 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
             </TableBody>
           </Table>
         </TableContainer>
+        {emptyTable ?
+          <div className='empty-table'>
+            
+          </div> : null}
       </div>
     );
   }
