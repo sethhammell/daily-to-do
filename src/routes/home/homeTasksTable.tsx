@@ -14,7 +14,7 @@ import EmptyTableMessage from '../../components/emptyTableMessage/emptyTableMess
 interface HomeTasksTableProps {
   todos: Todo[];
   todoCompletionData: { [key: string]: TodoCompletionData };
-  setTodoCompletionData(newTodoCompletionData: { [key: string]: TodoCompletionData }): void;
+  setTodoCompletionData(id: string, newTodoCompletionData: { [key: string]: TodoCompletionData }): void;
 }
 interface HomeTasksTableState {
 }
@@ -35,13 +35,13 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
   timeSpentChange(e: React.ChangeEvent<HTMLInputElement>, id: string) {
     const newTodoCompletionData = { ...this.props.todoCompletionData };
     newTodoCompletionData[id].timeSpent = +e.target.value;
-    this.props.setTodoCompletionData(newTodoCompletionData);
+    this.props.setTodoCompletionData(id, newTodoCompletionData);
   }
 
   completedChange(id: string) {
     const newTodoCompletionData = { ...this.props.todoCompletionData };
     newTodoCompletionData[id].completed = !newTodoCompletionData[id].completed;
-    this.props.setTodoCompletionData(newTodoCompletionData);
+    this.props.setTodoCompletionData(id, newTodoCompletionData);
   }
 
   render() {
@@ -53,7 +53,7 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
     const emptyTableButtonText = "Manage Tasks";
     const emptyTableNavigate = "/manage-tasks";
 
-    if (!Object.keys(this.props.todoCompletionData).length) return null;
+    if (!Object.keys(this.props.todoCompletionData).length && this.props.todos.length) return null;
 
     return (
       <div className='home-tasks-table'>
@@ -74,14 +74,14 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
                   <TableRow key={todo.id}>
                     <TableCell>
                       <Checkbox
-                        checked={this.props.todoCompletionData[todo.id].completed}
+                        checked={this.props.todoCompletionData[todo.id]?.completed || false}
                         onChange={() => this.completedChange.bind(this)(todo.id)} />
                     </TableCell>
                     <TableCell>{todo.taskName}</TableCell>
                     <TableCell>{todo.estimatedTime}</TableCell>
                     <TableCell>
                       <TextField
-                        value={this.props.todoCompletionData[todo.id].timeSpent}
+                        value={this.props.todoCompletionData[todo.id]?.timeSpent || 0}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.timeSpentChange.bind(this)(e, todo.id)}
                         margin="dense"
                       />

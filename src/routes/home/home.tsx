@@ -2,12 +2,14 @@ import React from 'react';
 import HomeTasksTableWithNav from "./homeTasksTable";
 import RouteHeaderBar from "../../components/routeHeaderBar/routeHeaderBar";
 import { Todo, TodoCompletionData } from "../../interfaces/todo";
-import "./home.css";
+import { updateTodo as updateTodoMutation } from '../../graphql/mutations';
 
 import { API } from 'aws-amplify';
 import { Auth } from 'aws-amplify';
 import { listTodos } from '../../graphql/queries';
 import DateInterface from './dateInterface';
+import "./home.css";
+import { TodayOutlined } from '@mui/icons-material';
 
 interface HomeProps { }
 interface HomeState {
@@ -82,8 +84,31 @@ class Home extends React.Component<HomeProps, HomeState> {
     this.setState({ todoCompletionData: newTodoCompletionData });
   }
 
-  setTodoCompletionData(newTodoCompletionData: { [key: string]: TodoCompletionData }) {
-    this.setState({ todoCompletionData: newTodoCompletionData });
+  setTodoCompletionData(id: string, newTodoCompletionData: { [key: string]: TodoCompletionData }) {
+    this.setState({ todoCompletionData: newTodoCompletionData }, async () => { await this.editTodo(id) });
+  }
+
+  async editTodo(id: string) {
+    if (!this.state.clientId) return;
+    const date = this.state.todoCompletionData[id].date;
+    const todoArray = this.state.todos.filter((todo: any) => todo.id === id);
+    const todo = todoArray[0];
+
+    let found = false;
+    for (const i in todo.todoCompletionData) {
+      if (todo.todoCompletionData[i].date === date) {
+        todo.todoCompletionData[i] = this.state.todoCompletionData[id];
+        found = true;
+      }
+    }
+    if (!found) {
+      todo.todoCompletionData.push(this.state.todoCompletionData[id]);
+    }
+
+    delete todo.createdAt;
+    delete todo.updatedAt;
+
+    await API.graphql({ query: updateTodoMutation, variables: { input: todo } });
   }
 
   updateTodosDate(newDate: Date) {
