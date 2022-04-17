@@ -13,16 +13,15 @@ import EmptyTableMessage from '../../components/emptyTableMessage/emptyTableMess
 
 interface HomeTasksTableProps {
   todos: Todo[];
+  todoCompletionData: { [key: string]: TodoCompletionData };
+  setTodoCompletionData(newTodoCompletionData: { [key: string]: TodoCompletionData }): void;
 }
 interface HomeTasksTableState {
-  todoCompletionData: { [key: string]: TodoCompletionData };
 }
 class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTableState> {
   constructor(props: HomeTasksTableProps) {
     super(props);
-    this.state = {
-      todoCompletionData: {}
-    };
+    this.state = {};
   }
 
   componentDidMount() {
@@ -34,15 +33,15 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
   }
 
   timeSpentChange(e: React.ChangeEvent<HTMLInputElement>, id: string) {
-    // const newTodoCompletionData = { ...this.state.todoCompletionData };
-    // newTodoCompletionData[id].timeSpent = +e.target.value;
-    // this.setState({ todoCompletionData: newTodoCompletionData });
+    const newTodoCompletionData = { ...this.props.todoCompletionData };
+    newTodoCompletionData[id].timeSpent = +e.target.value;
+    this.props.setTodoCompletionData(newTodoCompletionData);
   }
 
   completedChange(id: string) {
-    // const newTodoCompletionData = { ...this.state.todoCompletionData };
-    // newTodoCompletionData[id].completed = !newTodoCompletionData[id].completed;
-    // this.setState({ todoCompletionData: newTodoCompletionData });
+    const newTodoCompletionData = { ...this.props.todoCompletionData };
+    newTodoCompletionData[id].completed = !newTodoCompletionData[id].completed;
+    this.props.setTodoCompletionData(newTodoCompletionData);
   }
 
   render() {
@@ -53,6 +52,8 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
     const emptyTableMessage = "You have no tasks scheduled for today, click here to create some.";
     const emptyTableButtonText = "Manage Tasks";
     const emptyTableNavigate = "/manage-tasks";
+
+    if (!Object.keys(this.props.todoCompletionData).length) return null;
 
     return (
       <div className='home-tasks-table'>
@@ -73,16 +74,14 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
                   <TableRow key={todo.id}>
                     <TableCell>
                       <Checkbox
-                        // checked={this.state.todoCompletionData[todo.id].completed}
-                        checked={false}
+                        checked={this.props.todoCompletionData[todo.id].completed}
                         onChange={() => this.completedChange.bind(this)(todo.id)} />
                     </TableCell>
                     <TableCell>{todo.taskName}</TableCell>
                     <TableCell>{todo.estimatedTime}</TableCell>
                     <TableCell>
                       <TextField
-                        // value={this.state.todoCompletionData[todo.id].timeSpent}
-                        value={0}
+                        value={this.props.todoCompletionData[todo.id].timeSpent}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.timeSpentChange.bind(this)(e, todo.id)}
                         margin="dense"
                       />

@@ -1,7 +1,7 @@
 import React from 'react';
 import HomeTasksTableWithNav from "./homeTasksTable";
 import RouteHeaderBar from "../../components/routeHeaderBar/routeHeaderBar";
-import { Todo } from "../../interfaces/todo";
+import { Todo, TodoCompletionData } from "../../interfaces/todo";
 import "./home.css";
 
 import { API } from 'aws-amplify';
@@ -15,6 +15,7 @@ interface HomeState {
   allTodos: Todo[];
   clientId: string;
   todosDate: Date;
+  todoCompletionData: { [key: string]: TodoCompletionData };
 }
 class Home extends React.Component<HomeProps, HomeState> {
   constructor(props: HomeProps) {
@@ -23,7 +24,8 @@ class Home extends React.Component<HomeProps, HomeState> {
       todos: [],
       allTodos: [],
       clientId: "",
-      todosDate: new Date()
+      todosDate: new Date(),
+      todoCompletionData: {}
     }
   }
 
@@ -60,7 +62,28 @@ class Home extends React.Component<HomeProps, HomeState> {
     const newTodos = filterDayOfWeek as Todo[];
     this.setState({
       todos: newTodos
+    }, () => { this.updateTodoCompletionData() });
+  }
+
+  updateTodoCompletionData() {
+    const newTodoCompletionData: { [key: string]: TodoCompletionData } = {};
+    const date = this.state.todosDate.toLocaleDateString();
+    this.state.todos.forEach((todo) => {
+      const data = todo.todoCompletionData.filter((cd) => {
+        return cd.date === date;
+      })
+      if (data.length) {
+        newTodoCompletionData[todo.id] = data[0];
+      }
+      else {
+        newTodoCompletionData[todo.id] = { date: date, completed: false, timeSpent: 0 };
+      }
     });
+    this.setState({ todoCompletionData: newTodoCompletionData });
+  }
+
+  setTodoCompletionData(newTodoCompletionData: { [key: string]: TodoCompletionData }) {
+    this.setState({ todoCompletionData: newTodoCompletionData });
   }
 
   updateTodosDate(newDate: Date) {
@@ -78,7 +101,7 @@ class Home extends React.Component<HomeProps, HomeState> {
             <DateInterface todosDate={this.state.todosDate} updateTodosDate={this.updateTodosDate.bind(this)} />
           </div>
           <div className="tasks">
-            <HomeTasksTableWithNav todos={this.state.todos} />
+            <HomeTasksTableWithNav todos={this.state.todos} todoCompletionData={this.state.todoCompletionData} setTodoCompletionData={this.setTodoCompletionData.bind(this)} />
           </div>
         </div>
       </div>
