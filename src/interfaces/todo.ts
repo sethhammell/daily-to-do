@@ -3,6 +3,7 @@ import { DaysOfWeek } from "./daysOfWeek";
 export interface Todo extends TodoDataId {
   createdAt: string;
   updatedAt: string;
+  todoCompletionData: TodoCompletionData[];
 }
 
 export interface TodoDataId extends TodoData {
@@ -17,6 +18,7 @@ export interface TodoData {
 }
 
 export interface TodoCompletionData {
+  date: String;
   completed: boolean;
   timeSpent: number;
 }

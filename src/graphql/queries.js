@@ -17,6 +17,11 @@ export const getTodo = /* GraphQL */ `
         friday
         saturday
       }
+      todoCompletionData {
+        date
+        completed
+        timeSpent
+      }
       createdAt
       updatedAt
     }
@@ -42,6 +47,11 @@ export const listTodos = /* GraphQL */ `
           thursday
           friday
           saturday
+        }
+        todoCompletionData {
+          date
+          completed
+          timeSpent
         }
         createdAt
         updatedAt

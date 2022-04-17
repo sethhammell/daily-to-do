@@ -17,6 +17,11 @@ export const onCreateTodo = /* GraphQL */ `
         friday
         saturday
       }
+      todoCompletionData {
+        date
+        completed
+        timeSpent
+      }
       createdAt
       updatedAt
     }
@@ -38,6 +43,11 @@ export const onUpdateTodo = /* GraphQL */ `
         friday
         saturday
       }
+      todoCompletionData {
+        date
+        completed
+        timeSpent
+      }
       createdAt
       updatedAt
     }
@@ -58,6 +68,11 @@ export const onDeleteTodo = /* GraphQL */ `
         thursday
         friday
         saturday
+      }
+      todoCompletionData {
+        date
+        completed
+        timeSpent
       }
       createdAt
       updatedAt

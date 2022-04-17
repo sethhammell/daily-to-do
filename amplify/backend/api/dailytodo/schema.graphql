@@ -8,6 +8,7 @@ type Todo @model {
   taskName: String!
   estimatedTime: Int!
   daysOfWeek: DaysOfWeek!
+  todoCompletionData: [TodoCompletionData]
 }
 
 type DaysOfWeek {
@@ -18,4 +19,10 @@ type DaysOfWeek {
   thursday: Boolean,
   friday: Boolean,
   saturday: Boolean,
+}
+
+type TodoCompletionData {
+  date: String,
+  completed: Boolean,
+  timeSpent: Int,
 }
