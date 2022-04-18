@@ -2,6 +2,8 @@ import { Authenticator } from '@aws-amplify/ui-react';
 import { Card } from "@mui/material";
 import { useState } from "react";
 import MainRouter from './router';
+import store from './redux/store';
+import { Provider } from 'react-redux'
 import '@aws-amplify/ui-react/styles.css';
 import "./App.css";
 
@@ -24,7 +26,9 @@ function App() {
       <Authenticator>
         {({ signOut, user }) => (
           <div className="app">
-            <MainRouter setLoggedIn={setLoggedIn} />
+            <Provider store={store}>
+              <MainRouter setLoggedIn={setLoggedIn} />
+            </Provider>
           </div >
         )}
       </Authenticator>

@@ -8,8 +8,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Checkbox, TextField } from '@mui/material';
-import './home.css';
 import EmptyTableMessage from '../../components/emptyTableMessage/emptyTableMessage';
+import './home.css';
 
 interface HomeTasksTableProps {
   todos: Todo[];

@@ -9,7 +9,6 @@ import { Auth } from 'aws-amplify';
 import { listTodos } from '../../graphql/queries';
 import DateInterface from './dateInterface';
 import "./home.css";
-import { TodayOutlined } from '@mui/icons-material';
 
 interface HomeProps { }
 interface HomeState {
@@ -30,7 +29,7 @@ class Home extends React.Component<HomeProps, HomeState> {
       todoCompletionData: {}
     }
   }
-
+  
   async componentDidMount() {
     const clientId = await getClientId();
     if (clientId !== '') {
