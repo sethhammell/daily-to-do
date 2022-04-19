@@ -7,6 +7,7 @@ import './manageTasks.css';
 import { API } from 'aws-amplify';
 import { Auth } from 'aws-amplify';
 import { listTodos } from '../../graphql/queries';
+import { GraphQLResult } from "@aws-amplify/api/lib/types";
 import { createTodo as createTodoMutation, deleteTodo as deleteTodoMutation, updateTodo as updateTodoMutation } from '../../graphql/mutations';
 import { DaysOfWeek } from '../../interfaces/daysOfWeek';
 import RouteHeaderBar from '../../components/routeHeaderBar/routeHeaderBar';
@@ -63,7 +64,7 @@ class ManageTasks extends React.Component<ManageTasksProps, ManageTasksState> {
   async createTodo(todo: TodoData) {
     if (!this.state.clientId) return;
     todo.clientId = this.state.clientId;
-    const newData: any = await API.graphql({ query: createTodoMutation, variables: { input: todo } });
+    const newData: GraphQLResult<any> = await API.graphql({ query: createTodoMutation, variables: { input: todo } });
     const newTodo = newData.data.createTodo;
     this.setState({ todos: [...this.state.todos, newTodo] });
   }

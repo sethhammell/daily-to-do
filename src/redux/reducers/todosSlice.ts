@@ -1,38 +1,116 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { API, Auth } from 'aws-amplify';
+import { GraphQLResult } from "@aws-amplify/api/lib/types";
+import { listTodos } from '../../graphql/queries';
+import { Todo, TodoCompletionData, TodoData, TodoDataId } from '../../interfaces/todo';
+import { createTodo as createTodoMutation, deleteTodo as deleteTodoMutation, updateTodo as updateTodoMutation } from '../../graphql/mutations';
 import type { RootState } from '../store';
 
 interface TodosState {
-  value: number
+  todos: Todo[];
+  clientId: string;
+}
+
+interface editTodoCompletionDataPayload {
+  id: string;
+  todoCompletionData: { [key: string]: TodoCompletionData };
 }
 
 const initialState: TodosState = {
-  value: 0,
+  todos: [],
+  clientId: ""
 }
 
 export const todosSlice = createSlice({
   name: 'todos',
   initialState,
   reducers: {
-    increment: (state) => {
-      // Redux Toolkit allows us to write "mutating" logic in reducers. It
-      // doesn't actually mutate the state because it uses the Immer library,
-      // which detects changes to a "draft state" and produces a brand new
-      // immutable state based off those changes
-      state.value += 1;
+    fetchTodos: (state) => {
+      if (state.clientId) return;
+      try {
+        (API.graphql({
+          query: listTodos, variables: {
+            filter: {
+              clientId: { eq: state.clientId }
+            }
+          }
+        }) as Promise<GraphQLResult<any>>).then((apiData: { [key: string]: any }) => {
+          if (apiData.data?.listTodos?.items === undefined) return;
+          state.todos = apiData.data.listTodos.items;
+        });
+        // this.updateTodos();
+      } catch (error) {
+        console.log(error);
+      }
     },
-    decrement: (state) => {
-      state.value -= 1;
+    createTodo: (state, action: PayloadAction<TodoData>) => {
+      if (state.clientId) return;
+      const todo = action.payload;
+      todo.clientId = state.clientId;
+      (API.graphql({ query: createTodoMutation, variables: { input: todo } }) as Promise<GraphQLResult<any>>).then((newData: GraphQLResult<any>) => {
+        state.todos = [...state.todos, newData.data.createTodo];
+      });
     },
-    incrementByAmount: (state, action: PayloadAction<number>) => {
-      state.value += action.payload;
+    deleteTodo: (state, action: PayloadAction<string>) => {
+      const id = action.payload;
+      state.todos = state.todos.filter((todo: any) => todo.id !== id);
+      API.graphql({ query: deleteTodoMutation, variables: { input: { id } } });
     },
+    editTodo: (state, action: PayloadAction<TodoDataId>) => {
+      if (state.clientId) return;
+      const todo = action.payload;
+      todo.clientId = state.clientId;
+      (API.graphql({ query: updateTodoMutation, variables: { input: todo } }) as Promise<GraphQLResult<any>>).then((newData: GraphQLResult<any>) => {
+        const newTodo = newData.data.updateTodo;
+        const newTodosArray = state.todos.map((td: any) => {
+          if (td.id === todo.id) {
+            return newTodo;
+          }
+          else {
+            return td;
+          }
+        });
+        state.todos = [...newTodosArray];
+      });
+    },
+    editTodoCompletionData: (state, action: PayloadAction<editTodoCompletionDataPayload>) => {
+      if (state.clientId) return;
+      const { id, todoCompletionData } = action.payload;
+      const date = todoCompletionData[id].date;
+      const todoArray = state.todos.filter((todo: any) => todo.id === id);
+      const todo = todoArray[0];
+
+      let found = false;
+      for (const i in todo.todoCompletionData) {
+        if (todo.todoCompletionData[i].date === date) {
+          todo.todoCompletionData[i] = todoCompletionData[id];
+          found = true;
+        }
+      }
+      if (!found) {
+        todo.todoCompletionData.push(todoCompletionData[id]);
+      }
+
+      delete todo.createdAt;
+      delete todo.updatedAt;
+
+      API.graphql({ query: updateTodoMutation, variables: { input: todo } });
+    },
+    getClientId: (state) => {
+      try {
+        Auth.currentAuthenticatedUser().then((id: string) => {
+          state.clientId = id;
+        })
+      }
+      catch (error) {
+        console.log(error);
+      };
+    }
   },
 })
 
-// Action creators are generated for each case reducer function
-export const { increment, decrement, incrementByAmount } = todosSlice.actions;
+export const { fetchTodos, createTodo, editTodo, deleteTodo, editTodoCompletionData, getClientId } = todosSlice.actions;
 
-// Other code such as selectors can use the imported `RootState` type
-export const selectTodos = (state: RootState) => state.todos.value;
+export const selectTodos = (state: RootState) => state.todos.todos;
 
 export default todosSlice.reducer;
