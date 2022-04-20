@@ -4,16 +4,11 @@ import { GraphQLResult } from "@aws-amplify/api/lib/types";
 import { listTodos } from '../../graphql/queries';
 import { Todo, TodoCompletionData, TodoData, TodoDataId } from '../../interfaces/todo';
 import { createTodo as createTodoMutation, deleteTodo as deleteTodoMutation, updateTodo as updateTodoMutation } from '../../graphql/mutations';
-import type { RootState } from '../store';
+import type { AppDispatch, RootState, GetState } from '../store';
 
 interface TodosState {
   todos: Todo[];
   clientId: string;
-}
-
-interface editTodoCompletionDataPayload {
-  id: string;
-  todoCompletionData: { [key: string]: TodoCompletionData };
 }
 
 const initialState: TodosState = {
@@ -25,92 +20,106 @@ export const todosSlice = createSlice({
   name: 'todos',
   initialState,
   reducers: {
-    fetchTodos: (state) => {
-      if (state.clientId) return;
-      try {
-        (API.graphql({
-          query: listTodos, variables: {
-            filter: {
-              clientId: { eq: state.clientId }
-            }
-          }
-        }) as Promise<GraphQLResult<any>>).then((apiData: { [key: string]: any }) => {
-          if (apiData.data?.listTodos?.items === undefined) return;
-          state.todos = apiData.data.listTodos.items;
-        });
-        // this.updateTodos();
-      } catch (error) {
-        console.log(error);
-      }
+    setTodos: (state, action: PayloadAction<Todo[]>) => {
+      console.log('hi');
+      state.todos = action.payload;
     },
-    createTodo: (state, action: PayloadAction<TodoData>) => {
-      if (state.clientId) return;
-      const todo = action.payload;
-      todo.clientId = state.clientId;
-      (API.graphql({ query: createTodoMutation, variables: { input: todo } }) as Promise<GraphQLResult<any>>).then((newData: GraphQLResult<any>) => {
-        state.todos = [...state.todos, newData.data.createTodo];
-      });
-    },
-    deleteTodo: (state, action: PayloadAction<string>) => {
-      const id = action.payload;
-      state.todos = state.todos.filter((todo: any) => todo.id !== id);
-      API.graphql({ query: deleteTodoMutation, variables: { input: { id } } });
-    },
-    editTodo: (state, action: PayloadAction<TodoDataId>) => {
-      if (state.clientId) return;
-      const todo = action.payload;
-      todo.clientId = state.clientId;
-      (API.graphql({ query: updateTodoMutation, variables: { input: todo } }) as Promise<GraphQLResult<any>>).then((newData: GraphQLResult<any>) => {
-        const newTodo = newData.data.updateTodo;
-        const newTodosArray = state.todos.map((td: any) => {
-          if (td.id === todo.id) {
-            return newTodo;
-          }
-          else {
-            return td;
-          }
-        });
-        state.todos = [...newTodosArray];
-      });
-    },
-    editTodoCompletionData: (state, action: PayloadAction<editTodoCompletionDataPayload>) => {
-      if (state.clientId) return;
-      const { id, todoCompletionData } = action.payload;
-      const date = todoCompletionData[id].date;
-      const todoArray = state.todos.filter((todo: any) => todo.id === id);
-      const todo = todoArray[0];
-
-      let found = false;
-      for (const i in todo.todoCompletionData) {
-        if (todo.todoCompletionData[i].date === date) {
-          todo.todoCompletionData[i] = todoCompletionData[id];
-          found = true;
-        }
-      }
-      if (!found) {
-        todo.todoCompletionData.push(todoCompletionData[id]);
-      }
-
-      delete todo.createdAt;
-      delete todo.updatedAt;
-
-      API.graphql({ query: updateTodoMutation, variables: { input: todo } });
-    },
-    getClientId: (state) => {
-      try {
-        Auth.currentAuthenticatedUser().then((id: string) => {
-          state.clientId = id;
-        })
-      }
-      catch (error) {
-        console.log(error);
-      };
+    setClientId: (state, action: PayloadAction<string>) => {
+      state.clientId = action.payload;
+      console.log(state.clientId);
     }
   },
 })
 
-export const { fetchTodos, createTodo, editTodo, deleteTodo, editTodoCompletionData, getClientId } = todosSlice.actions;
+export async function getClientId(dispatch: AppDispatch, getState: GetState) {
+  try {
+    const data = await Auth.currentAuthenticatedUser();
+    if (data) {
+      dispatch(setClientId(data.pool.clientId));
+    }
+  }
+  catch (error) {
+    console.log(error);
+  };
+}
 
+export async function fetchTodos(dispatch: AppDispatch, getState: GetState) {
+  const state = getState().todos;
+  if (!state.clientId) return;
+  try {
+    const apiData = await API.graphql({
+      query: listTodos, variables: {
+        filter: {
+          clientId: { eq: state.clientId }
+        }
+      }
+    }) as { [key: string]: any };
+    if (apiData.data?.listTodos?.items === undefined) return;
+    dispatch(setTodos(apiData.data.listTodos.items));
+    // this.updateTodos();
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function createTodo(dispatch: AppDispatch, getState: GetState, todo: TodoData) {
+  const state = getState().todos;
+  if (!state.clientId) return;
+  todo.clientId = state.clientId;
+  const newData: GraphQLResult<any> = await API.graphql({ query: createTodoMutation, variables: { input: todo } });
+  const newTodo = newData.data.createTodo;
+  setTodos([...state.todos, newTodo]);
+}
+
+export async function deleteTodo(dispatch: AppDispatch, getState: GetState, id: string) {
+  const state = getState().todos;
+  const newTodosArray = state.todos.filter((todo: any) => todo.id !== id);
+  setTodos(newTodosArray);
+  await API.graphql({ query: deleteTodoMutation, variables: { input: { id } } });
+}
+
+export async function editTodo(dispatch: AppDispatch, getState: GetState, todo: TodoDataId) {
+  const state = getState().todos;
+  if (!state.clientId) return;
+  todo.clientId = state.clientId;
+  const newData: any = await API.graphql({ query: updateTodoMutation, variables: { input: todo } });
+
+  const newTodo = newData.data.updateTodo;
+  const newTodosArray = state.todos.map((td: any) => {
+    if (td.id === todo.id) {
+      return newTodo;
+    }
+    else {
+      return td;
+    }
+  });
+  setTodos([...newTodosArray]);
+}
+
+export async function editTodoCompletionData(dispatch: AppDispatch, getState: GetState, id: string, todoCompletionData: { [key: string]: TodoCompletionData }) {
+  const state = getState().todos;
+  if (!state.clientId) return;
+  const date = todoCompletionData[id].date;
+  const todoArray = state.todos.filter((todo: any) => todo.id === id);
+  const todo = todoArray[0];
+
+  let found = false;
+  for (const i in todo.todoCompletionData) {
+    if (todo.todoCompletionData[i].date === date) {
+      todo.todoCompletionData[i] = todoCompletionData[id];
+      found = true;
+    }
+  }
+  if (!found) {
+    todo.todoCompletionData.push(todoCompletionData[id]);
+  }
+
+  delete todo.createdAt;
+  delete todo.updatedAt;
+
+  API.graphql({ query: updateTodoMutation, variables: { input: todo } });
+}
+
+export const { setTodos, setClientId } = todosSlice.actions;
 export const selectTodos = (state: RootState) => state.todos.todos;
-
 export default todosSlice.reducer;
