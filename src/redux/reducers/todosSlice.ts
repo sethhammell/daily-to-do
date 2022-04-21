@@ -21,12 +21,10 @@ export const todosSlice = createSlice({
   initialState,
   reducers: {
     setTodos: (state, action: PayloadAction<Todo[]>) => {
-      console.log('hi');
       state.todos = action.payload;
     },
     setClientId: (state, action: PayloadAction<string>) => {
       state.clientId = action.payload;
-      console.log(state.clientId);
     }
   },
 })

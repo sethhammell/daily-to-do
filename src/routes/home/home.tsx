@@ -2,16 +2,11 @@ import React from 'react';
 import HomeTasksTableWithNav from "./homeTasksTable";
 import RouteHeaderBar from "../../components/routeHeaderBar/routeHeaderBar";
 import { Todo, TodoCompletionData } from "../../interfaces/todo";
-import { updateTodo as updateTodoMutation } from '../../graphql/mutations';
-
-import { API } from 'aws-amplify';
-import { Auth } from 'aws-amplify';
-import { listTodos } from '../../graphql/queries';
 import DateInterface from './dateInterface';
-import "./home.css";
 import { connect } from 'react-redux';
 import store, { RootState } from '../../redux/store';
 import { editTodoCompletionData } from '../../redux/reducers/todosSlice';
+import "./home.css";
 
 interface HomeProps { todos?: Todo[] }
 interface HomeState {
