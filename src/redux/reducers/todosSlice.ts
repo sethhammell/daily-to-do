@@ -96,28 +96,31 @@ export async function editTodo(dispatch: AppDispatch, getState: GetState, todo: 
   setTodos([...newTodosArray]);
 }
 
-export async function editTodoCompletionData(dispatch: AppDispatch, getState: GetState, id: string, todoCompletionData: { [key: string]: TodoCompletionData }) {
-  const state = getState().todos;
-  if (!state.clientId) return;
-  const date = todoCompletionData[id].date;
-  const todoArray = state.todos.filter((todo: any) => todo.id === id);
-  const todo = todoArray[0];
+export const editTodoCompletionData = (id: string, todoCompletionData: { [key: string]: TodoCompletionData }) => {
+  return async (dispatch: AppDispatch, getState: GetState) => {
+    const cloneDeep = require('lodash.clonedeep');
+    const state = getState().todos;
+    if (!state.clientId) return;
+    const date = todoCompletionData[id].date;
+    const todoArray = state.todos.filter((todo: any) => todo.id === id);
+    const todo = cloneDeep(todoArray[0]);
 
-  let found = false;
-  for (const i in todo.todoCompletionData) {
-    if (todo.todoCompletionData[i].date === date) {
-      todo.todoCompletionData[i] = todoCompletionData[id];
-      found = true;
+    let found = false;
+    for (const i in todo.todoCompletionData) {
+      if (todo.todoCompletionData[i].date === date) {
+        todo.todoCompletionData[i] = todoCompletionData[id];
+        found = true;
+      }
     }
-  }
-  if (!found) {
-    todo.todoCompletionData.push(todoCompletionData[id]);
-  }
+    if (!found) {
+      todo.todoCompletionData.push(todoCompletionData[id]);
+    }
 
-  delete todo.createdAt;
-  delete todo.updatedAt;
+    delete todo.createdAt;
+    delete todo.updatedAt;
 
-  API.graphql({ query: updateTodoMutation, variables: { input: todo } });
+    API.graphql({ query: updateTodoMutation, variables: { input: todo } });
+  }
 }
 
 export const { setTodos, setClientId } = todosSlice.actions;

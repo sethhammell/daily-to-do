@@ -9,12 +9,13 @@ import { Auth } from 'aws-amplify';
 import { listTodos } from '../../graphql/queries';
 import DateInterface from './dateInterface';
 import "./home.css";
+import { connect } from 'react-redux';
+import store, { RootState } from '../../redux/store';
+import { editTodoCompletionData } from '../../redux/reducers/todosSlice';
 
-interface HomeProps { }
+interface HomeProps { todos?: Todo[] }
 interface HomeState {
-  todos: Todo[];
-  allTodos: Todo[];
-  clientId: string;
+  dayOfTodos: Todo[];
   todosDate: Date;
   todoCompletionData: { [key: string]: TodoCompletionData };
 }
@@ -22,54 +23,25 @@ class Home extends React.Component<HomeProps, HomeState> {
   constructor(props: HomeProps) {
     super(props);
     this.state = {
-      todos: [],
-      allTodos: [],
-      clientId: "",
+      dayOfTodos: [],
       todosDate: new Date(),
       todoCompletionData: {}
     }
   }
-  
-  async componentDidMount() {
-    const clientId = await getClientId();
-    if (clientId !== '') {
-      this.setState({ clientId: clientId });
-    }
-    this.fetchTodos();
-  }
-
-  async fetchTodos() {
-    if (!this.state.clientId) return;
-    try {
-      const apiData = await API.graphql({
-        query: listTodos, variables: {
-          filter: {
-            clientId: { eq: this.state.clientId }
-          }
-        }
-      }) as { [key: string]: any };
-      if (apiData.data?.listTodos?.items === undefined) return;
-
-      this.setState({ allTodos: apiData.data.listTodos.items });
-      this.updateTodos();
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   updateTodos() {
-    const filterDayOfWeek = dayOfWeekFilter(this.state.allTodos, this.state.todosDate);
+    const filterDayOfWeek = dayOfWeekFilter(this.props.todos!, this.state.todosDate);
 
     const newTodos = filterDayOfWeek as Todo[];
     this.setState({
-      todos: newTodos
+      dayOfTodos: newTodos
     }, () => { this.updateTodoCompletionData() });
   }
 
   updateTodoCompletionData() {
     const newTodoCompletionData: { [key: string]: TodoCompletionData } = {};
     const date = this.state.todosDate.toLocaleDateString();
-    this.state.todos.forEach((todo) => {
+    this.state.dayOfTodos.forEach((todo) => {
       const data = todo.todoCompletionData.filter((cd) => {
         return cd.date === date;
       })
@@ -84,30 +56,7 @@ class Home extends React.Component<HomeProps, HomeState> {
   }
 
   setTodoCompletionData(id: string, newTodoCompletionData: { [key: string]: TodoCompletionData }) {
-    this.setState({ todoCompletionData: newTodoCompletionData }, async () => { await this.editTodo(id) });
-  }
-
-  async editTodo(id: string) {
-    if (!this.state.clientId) return;
-    const date = this.state.todoCompletionData[id].date;
-    const todoArray = this.state.todos.filter((todo: any) => todo.id === id);
-    const todo = todoArray[0];
-
-    let found = false;
-    for (const i in todo.todoCompletionData) {
-      if (todo.todoCompletionData[i].date === date) {
-        todo.todoCompletionData[i] = this.state.todoCompletionData[id];
-        found = true;
-      }
-    }
-    if (!found) {
-      todo.todoCompletionData.push(this.state.todoCompletionData[id]);
-    }
-
-    delete todo.createdAt;
-    delete todo.updatedAt;
-
-    await API.graphql({ query: updateTodoMutation, variables: { input: todo } });
+    this.setState({ todoCompletionData: newTodoCompletionData }, async () => { await store.dispatch(editTodoCompletionData(id, this.state.todoCompletionData) as any) });
   }
 
   updateTodosDate(newDate: Date) {
@@ -125,23 +74,12 @@ class Home extends React.Component<HomeProps, HomeState> {
             <DateInterface todosDate={this.state.todosDate} updateTodosDate={this.updateTodosDate.bind(this)} />
           </div>
           <div className="tasks">
-            <HomeTasksTableWithNav todos={this.state.todos} todoCompletionData={this.state.todoCompletionData} setTodoCompletionData={this.setTodoCompletionData.bind(this)} />
+            <HomeTasksTableWithNav todos={this.state.dayOfTodos} todoCompletionData={this.state.todoCompletionData} setTodoCompletionData={this.setTodoCompletionData.bind(this)} />
           </div>
         </div>
       </div>
     );
   }
-}
-
-async function getClientId(): Promise<string> {
-  try {
-    const data = await Auth.currentAuthenticatedUser();
-    return data ? data.pool.clientId : '';
-  }
-  catch (error) {
-    console.log(error);
-    return '';
-  };
 }
 
 function dayOfWeekFilter(todos: Todo[], date: Date): Todo[] {
@@ -170,4 +108,7 @@ function dayOfWeekFilter(todos: Todo[], date: Date): Todo[] {
   return newTodos;
 }
 
-export default Home;
+function mapStateToProps(state: RootState) {
+  return { todos: state.todos.todos };
+}
+export default connect(mapStateToProps)(Home);

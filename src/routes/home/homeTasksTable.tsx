@@ -24,22 +24,14 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
     this.state = {};
   }
 
-  componentDidMount() {
-    // const newTodoCompletionData: { [key: string]: TodoCompletionData } = {}
-    // this.props.todos.forEach((todo) => {
-    //   newTodoCompletionData[todo.id] = { completed: false, timeSpent: 0 };
-    // })
-    // this.setState({ todoCompletionData: newTodoCompletionData });
-  }
-
   timeSpentChange(e: React.ChangeEvent<HTMLInputElement>, id: string) {
-    const newTodoCompletionData = { ...this.props.todoCompletionData };
+    const newTodoCompletionData = cloneDeep(this.props.todoCompletionData);
     newTodoCompletionData[id].timeSpent = +e.target.value;
     this.props.setTodoCompletionData(id, newTodoCompletionData);
   }
 
   completedChange(id: string) {
-    const newTodoCompletionData = { ...this.props.todoCompletionData };
+    const newTodoCompletionData = cloneDeep(this.props.todoCompletionData);
     newTodoCompletionData[id].completed = !newTodoCompletionData[id].completed;
     this.props.setTodoCompletionData(id, newTodoCompletionData);
   }
@@ -97,5 +89,7 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
     );
   }
 }
+
+const cloneDeep = require('lodash.clonedeep');
 
 export default HomeTasksTable;
