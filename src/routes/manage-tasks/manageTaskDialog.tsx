@@ -9,6 +9,8 @@ import Button from '@mui/material/Button';
 import { DaysOfWeek } from '../../interfaces/daysOfWeek';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { TodoData, TodoDataId } from '../../interfaces/todo';
+import { createTodo, editTodo } from '../../redux/reducers/todosSlice';
+import store from '../../redux/store';
 
 const manageTaskDialogDefaultState: ManageTaskDialogState = {
   id: "",
@@ -30,8 +32,6 @@ interface ManageTaskDialogProps {
   open: boolean;
   editTask?: boolean;
   closeManageTaskDialog(): void;
-  createTodo(todo: TodoData): Promise<void>;
-  editTodo(todo: TodoDataId): Promise<void>;
 }
 interface ManageTaskDialogState {
   id: string;
@@ -82,11 +82,11 @@ class ManageTaskDialog extends React.Component<ManageTaskDialogProps, ManageTask
       daysOfWeek: this.state.daysOfWeek,
       todoCompletionData: []
     }
-    await this.props.createTodo(todo);
+    await store.dispatch(createTodo(todo) as any);
     this.setState(manageTaskDialogDefaultState);
   }
 
-  async editTodo() {
+  async edit() {
     this.props.closeManageTaskDialog();
     const todo: TodoDataId = {
       id: this.state.id,
@@ -95,7 +95,7 @@ class ManageTaskDialog extends React.Component<ManageTaskDialogProps, ManageTask
       estimatedTime: +this.state.estimatedTime!,
       daysOfWeek: this.state.daysOfWeek
     }
-    await this.props.editTodo(todo);
+    await store.dispatch(editTodo(todo) as any);
     this.setState(manageTaskDialogDefaultState);
   }
 
@@ -109,7 +109,7 @@ class ManageTaskDialog extends React.Component<ManageTaskDialogProps, ManageTask
 
   confirmTaskAction() {
     if (this.props.editTask) {
-      this.editTodo();
+      this.edit();
     }
     else {
       this.create();

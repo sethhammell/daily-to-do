@@ -54,34 +54,33 @@ export async function fetchTodos(dispatch: AppDispatch, getState: GetState) {
     }) as { [key: string]: any };
     if (apiData.data?.listTodos?.items === undefined) return;
     dispatch(setTodos(apiData.data.listTodos.items));
-    // this.updateTodos();
   } catch (error) {
     console.log(error);
   }
 }
 
-export const createTodo = (dispatch: AppDispatch, getState: GetState) => {
-  return async (todo: TodoData) => {
+export const createTodo = (todo: TodoData) => {
+  return async (dispatch: AppDispatch, getState: GetState) => {
     const state = getState().todos;
     if (!state.clientId) return;
     todo.clientId = state.clientId;
     const newData: GraphQLResult<any> = await API.graphql({ query: createTodoMutation, variables: { input: todo } });
     const newTodo = newData.data.createTodo;
-    setTodos([...state.todos, newTodo]);
+    dispatch(setTodos([...state.todos, newTodo]));
   }
 }
 
-export const deleteTodo = (dispatch: AppDispatch, getState: GetState) => {
-  return async (id: string) => {
+export const deleteTodo = (id: string) => {
+  return async (dispatch: AppDispatch, getState: GetState) => {
     const state = getState().todos;
     const newTodosArray = state.todos.filter((todo: any) => todo.id !== id);
-    setTodos(newTodosArray);
+    dispatch(setTodos(newTodosArray));
     await API.graphql({ query: deleteTodoMutation, variables: { input: { id } } });
   }
 }
 
-export const editTodo = (dispatch: AppDispatch, getState: GetState) => {
-  return async (todo: TodoDataId) => {
+export const editTodo = (todo: TodoDataId) => {
+  return async (dispatch: AppDispatch, getState: GetState) => {
     const state = getState().todos;
     if (!state.clientId) return;
     todo.clientId = state.clientId;
@@ -96,7 +95,7 @@ export const editTodo = (dispatch: AppDispatch, getState: GetState) => {
         return td;
       }
     });
-    setTodos([...newTodosArray]);
+    dispatch(setTodos([...newTodosArray]));
   }
 }
 

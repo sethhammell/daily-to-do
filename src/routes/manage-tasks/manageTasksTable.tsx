@@ -19,12 +19,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { DaysOfWeek } from '../../interfaces/daysOfWeek';
 import { IconButton } from '@mui/material';
 import EmptyTableMessage from '../../components/emptyTableMessage/emptyTableMessage';
+import store, { RootState } from '../../redux/store';
+import { connect } from 'react-redux';
+import { deleteTodo } from '../../redux/reducers/todosSlice';
 import './manageTasks.css';
 
 interface ManageTasksTableProps {
-  todos: Todo[];
+  todos?: Todo[];
   openManageTaskDialog(editTask?: boolean, id?: string): void;
-  deleteTodo(id: string): Promise<void>;
 }
 interface ManageTasksTableState {
   open: boolean;
@@ -58,13 +60,13 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
 
   deleteConfirmed(id: string) {
     this.closeDeleteTaskDialog();
-    this.props.deleteTodo(id);
+    store.dispatch(deleteTodo(id) as any);
   }
 
   render() {
     const todoHeaders: string[] = ["Task Name", "Estimated Time", "Days of the Week", "Add"];
 
-    const emptyTable = !this.props.todos.length;
+    const emptyTable = !this.props.todos?.length;
     const emptyTableMessage = "No tasks created yet, press the 'Add' button to create a task.";
 
     return (
@@ -95,7 +97,7 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
               </TableRow>
             </TableHead>
             <TableBody>
-              {this.props.todos.map((todo: Todo) => {
+              {this.props.todos?.map((todo: Todo) => {
                 return (
                   <TableRow key={todo.id}>
                     <TableCell>{todo.taskName}</TableCell>
@@ -148,4 +150,7 @@ function getDaysOfWeekText(daysOfWeek: DaysOfWeek): string {
   return daysOfWeekText;
 }
 
-export default ManageTasksTable;
+function mapStateToProps(state: RootState) {
+  return { todos: state.todos.todos };
+}
+export default connect(mapStateToProps)(ManageTasksTable);
