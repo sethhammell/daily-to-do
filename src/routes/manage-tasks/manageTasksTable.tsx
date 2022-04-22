@@ -16,10 +16,10 @@ import Paper from '@mui/material/Paper';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import './manageTasks.css';
 import { DaysOfWeek } from '../../interfaces/daysOfWeek';
 import { IconButton } from '@mui/material';
 import EmptyTableMessage from '../../components/emptyTableMessage/emptyTableMessage';
+import './manageTasks.css';
 
 interface ManageTasksTableProps {
   todos: Todo[];

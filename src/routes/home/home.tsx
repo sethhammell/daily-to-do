@@ -24,6 +24,12 @@ class Home extends React.Component<HomeProps, HomeState> {
     }
   }
 
+  componentDidUpdate(prevProps: HomeProps) {
+    if (prevProps.todos?.length !== this.props.todos?.length) {
+      this.updateTodos();
+    }
+  }
+
   updateTodos() {
     const filterDayOfWeek = dayOfWeekFilter(this.props.todos!, this.state.todosDate);
 
