@@ -60,38 +60,44 @@ export async function fetchTodos(dispatch: AppDispatch, getState: GetState) {
   }
 }
 
-export async function createTodo(dispatch: AppDispatch, getState: GetState, todo: TodoData) {
-  const state = getState().todos;
-  if (!state.clientId) return;
-  todo.clientId = state.clientId;
-  const newData: GraphQLResult<any> = await API.graphql({ query: createTodoMutation, variables: { input: todo } });
-  const newTodo = newData.data.createTodo;
-  setTodos([...state.todos, newTodo]);
+export const createTodo = (dispatch: AppDispatch, getState: GetState) => {
+  return async (todo: TodoData) => {
+    const state = getState().todos;
+    if (!state.clientId) return;
+    todo.clientId = state.clientId;
+    const newData: GraphQLResult<any> = await API.graphql({ query: createTodoMutation, variables: { input: todo } });
+    const newTodo = newData.data.createTodo;
+    setTodos([...state.todos, newTodo]);
+  }
 }
 
-export async function deleteTodo(dispatch: AppDispatch, getState: GetState, id: string) {
-  const state = getState().todos;
-  const newTodosArray = state.todos.filter((todo: any) => todo.id !== id);
-  setTodos(newTodosArray);
-  await API.graphql({ query: deleteTodoMutation, variables: { input: { id } } });
+export const deleteTodo = (dispatch: AppDispatch, getState: GetState) => {
+  return async (id: string) => {
+    const state = getState().todos;
+    const newTodosArray = state.todos.filter((todo: any) => todo.id !== id);
+    setTodos(newTodosArray);
+    await API.graphql({ query: deleteTodoMutation, variables: { input: { id } } });
+  }
 }
 
-export async function editTodo(dispatch: AppDispatch, getState: GetState, todo: TodoDataId) {
-  const state = getState().todos;
-  if (!state.clientId) return;
-  todo.clientId = state.clientId;
-  const newData: any = await API.graphql({ query: updateTodoMutation, variables: { input: todo } });
+export const editTodo = (dispatch: AppDispatch, getState: GetState) => {
+  return async (todo: TodoDataId) => {
+    const state = getState().todos;
+    if (!state.clientId) return;
+    todo.clientId = state.clientId;
+    const newData: any = await API.graphql({ query: updateTodoMutation, variables: { input: todo } });
 
-  const newTodo = newData.data.updateTodo;
-  const newTodosArray = state.todos.map((td: any) => {
-    if (td.id === todo.id) {
-      return newTodo;
-    }
-    else {
-      return td;
-    }
-  });
-  setTodos([...newTodosArray]);
+    const newTodo = newData.data.updateTodo;
+    const newTodosArray = state.todos.map((td: any) => {
+      if (td.id === todo.id) {
+        return newTodo;
+      }
+      else {
+        return td;
+      }
+    });
+    setTodos([...newTodosArray]);
+  }
 }
 
 export const editTodoCompletionData = (id: string, todoCompletionData: { [key: string]: TodoCompletionData }) => {
