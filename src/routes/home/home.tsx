@@ -24,6 +24,10 @@ class Home extends React.Component<HomeProps, HomeState> {
     }
   }
 
+  componentDidMount() {
+    this.updateTodos();
+  }
+
   componentDidUpdate(prevProps: HomeProps) {
     if (prevProps.todos?.length !== this.props.todos?.length) {
       this.updateTodos();
