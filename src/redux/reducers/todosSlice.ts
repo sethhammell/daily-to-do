@@ -33,7 +33,7 @@ export async function getClientId(dispatch: AppDispatch, getState: GetState) {
   try {
     const data = await Auth.currentAuthenticatedUser();
     if (data) {
-      dispatch(setClientId(data.pool.clientId));
+      dispatch(setClientId(data.attributes.sub));
     }
   }
   catch (error) {
