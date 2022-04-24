@@ -55,7 +55,7 @@ class HomeTasksTable extends React.Component<HomeTasksTableProps, HomeTasksTable
               <TableRow>
                 {todoHeaders.map((header: string, i: number) => {
                   return (
-                    <TableCell className={todoHeaderClasses[i]}>{header}</TableCell>
+                    <TableCell key={header} className={todoHeaderClasses[i]}>{header}</TableCell>
                   );
                 })}
               </TableRow>
