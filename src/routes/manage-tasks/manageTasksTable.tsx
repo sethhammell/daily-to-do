@@ -78,7 +78,7 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
                 {todoHeaders.map((header: string, i: number) => {
                   if (i === todoHeaders.length - 1) {
                     return (
-                      <TableCell>
+                      <TableCell key={header}>
                         {header}
                         <IconButton
                           onClick={() => this.props.openManageTaskDialog()}
@@ -90,7 +90,7 @@ class ManageTasksTable extends React.Component<ManageTasksTableProps, ManageTask
                   }
                   else {
                     return (
-                      <TableCell>{header}</TableCell>
+                      <TableCell key={header}>{header}</TableCell>
                     );
                   }
                 })}
