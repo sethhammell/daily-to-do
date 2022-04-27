@@ -5,29 +5,50 @@ import { Todo, TodoCompletionData, TodoStats } from "../../interfaces/todo";
 import { RootState } from "../../redux/store";
 import StatsTasksTable from "./statsTasksTable";
 import "./stats.css";
+import StatDisplay from "./statDisplay";
 
 interface StatsProps { todos?: Todo[] }
-interface StatsState { todoStats: TodoStats[] }
+interface StatsState {
+  todoStats: TodoStats[],
+  totalTimeSpent: number,
+  totalNumberOfTasksCompleted: number,
+  daysSinceFirstTask: number
+}
 class Stats extends React.Component<StatsProps, StatsState> {
   constructor(props: StatsProps) {
     super(props);
     this.state = {
-      todoStats: []
+      todoStats: [],
+      totalTimeSpent: 0,
+      totalNumberOfTasksCompleted: 0,
+      daysSinceFirstTask: 0
     }
-    // total time spent on all tasks, total number of tasks completed, first task created date
   }
 
   componentDidMount() {
-    this.updateTodoStats();
+    this.updateStats();
   }
 
   componentDidUpdate(prevProps: StatsProps) {
     if (prevProps.todos?.length !== this.props.todos?.length) {
-      this.updateTodoStats();
+      this.updateStats();
     }
   }
 
-  updateTodoStats() {
+  resetStats() {
+    this.setState({
+      totalTimeSpent: 0,
+      totalNumberOfTasksCompleted: 0,
+      daysSinceFirstTask: 0
+    });
+  }
+
+  updateStats() {
+    this.resetStats();
+    let newTotalTimeSpent = 0;
+    let newTotalNumberOfTasksCompleted = 0;
+    let oldestDate = new Date();
+
     const newTodoStats: TodoStats[] = this.props.todos!.map((todo: Todo) => {
       let totalTimeSpent = 0;
       let numberOfCompletedTasks = 0;
@@ -36,6 +57,14 @@ class Stats extends React.Component<StatsProps, StatsState> {
         numberOfCompletedTasks += cd.completed ? 1 : 0;
       });
       const averageTimePerTask = !numberOfCompletedTasks ? 0 : +(totalTimeSpent / numberOfCompletedTasks).toFixed(2);
+
+      newTotalTimeSpent += totalTimeSpent;
+      newTotalNumberOfTasksCompleted += numberOfCompletedTasks;
+      const createdDate = new Date(todo.createdAt!.substring(0, 10));
+      if (createdDate < oldestDate) {
+        oldestDate = createdDate;
+      }
+
       return {
         id: todo.id,
         taskName: todo.taskName,
@@ -45,7 +74,11 @@ class Stats extends React.Component<StatsProps, StatsState> {
         createdAt: todo.createdAt?.substring(0, 10)
       } as TodoStats;
     });
-    this.setState({ todoStats: newTodoStats });
+    this.setState({
+      todoStats: newTodoStats,
+      totalTimeSpent: newTotalTimeSpent,
+      totalNumberOfTasksCompleted: newTotalNumberOfTasksCompleted, daysSinceFirstTask: Math.floor((new Date().getTime() - oldestDate.getTime()) / (24 * 60 * 60 * 1000))
+    });
   }
 
   render() {
@@ -53,8 +86,15 @@ class Stats extends React.Component<StatsProps, StatsState> {
       <div>
         <RouteHeaderBar routeName="Stats" />
         <div className="stats-container">
-          <div className="stats-table-container">
-            <StatsTasksTable todoStats={this.state.todoStats} />
+          <div className="display-container">
+            <div className="display-stats-container">
+              <StatDisplay header="Total Time Spent" stat={this.state.totalTimeSpent} />
+              <StatDisplay header="Total Tasks Completed" stat={this.state.totalNumberOfTasksCompleted} />
+              <StatDisplay header="Days Since First Task" stat={this.state.daysSinceFirstTask} />
+            </div>
+            <div className="stats-table-container">
+              <StatsTasksTable todoStats={this.state.todoStats} />
+            </div>
           </div>
         </div>
       </div>
