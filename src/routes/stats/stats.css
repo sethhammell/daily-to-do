@@ -1,0 +1,13 @@
+.stats-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.stats-tasks-table {
+  width: 60%;
+}
+
+.stats-table-container {
+  display: flex;
+  justify-content: center;
+}

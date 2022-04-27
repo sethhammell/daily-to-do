@@ -26,3 +26,12 @@ export interface TodoCompletionData {
   completed: boolean;
   timeSpent: number;
 }
+
+export interface TodoStats {
+  id: string;
+  taskName: string;
+  totalTimeSpent: number;
+  numberOfCompletedTasks: number;
+  averageTimePerTask: number;
+  createdAt: string;
+}

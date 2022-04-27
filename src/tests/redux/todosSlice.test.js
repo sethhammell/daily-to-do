@@ -7,7 +7,7 @@ describe('todosSlice', () => {
         todos: [],
         clientId: ""
       }
-    )
+    );
   });
 
   test('setTodos sets todos to value', () => {
@@ -25,17 +25,17 @@ describe('todosSlice', () => {
         todos: todo,
         clientId: ""
       }
-    )
+    );
   });
 
   test('setClientId sets clientId to value', () => {
-    const clientId = "123"
+    const clientId = "123";
 
     expect(todosSlice(undefined, setClientId(clientId))).toEqual(
       {
         todos: [],
         clientId: clientId
       }
-    )
+    );
   });
 });
