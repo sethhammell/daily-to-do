@@ -1,7 +1,3 @@
-# Link to App
-
-https://master.d2h9mfqohjwf5j.amplifyapp.com/
-
 ## Available Scripts
 
 In the project directory, you can run:
