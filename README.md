@@ -1,4 +1,4 @@
-## Available Scripts
+## Daily-Todos
 Todo app that allows for recurring tasks throughout the week.
 
 In the project directory, you can run:
